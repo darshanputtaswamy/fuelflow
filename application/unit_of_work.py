@@ -4,12 +4,12 @@ import abc
 from sqlalchemy import create_engine
 
 from infrastructure.repository.core.app_users_sa_repo import AppUsersSQLAlchemyRepository
-from infrastructure.repository.core.lob_sa_repo import LOBSQLAlchemyRepository
-from infrastructure.repository.core.lob_sa_repo import LOBActivitiesSQLAlchemyRepository
-from infrastructure.repository.core.lob_sa_repo import LOBRolesSQLAlchemyRepository
-from infrastructure.repository.core.lob_sa_repo import LOBUserPrivilegeSQLAlchemyRepository
-from infrastructure.repository.core.lob_sa_repo import LOBRotaSQLAlchemyRepository
-from infrastructure.repository.core.lob_sa_repo import POSSQLAlchemyRepository
+from infrastructure.repository.fuel.lob_sa_repo import LOBSQLAlchemyRepository
+from infrastructure.repository.fuel.lob_sa_repo import LOBActivitiesSQLAlchemyRepository
+from infrastructure.repository.fuel.lob_sa_repo import LOBRolesSQLAlchemyRepository
+from infrastructure.repository.fuel.lob_sa_repo import LOBUserPrivilegeSQLAlchemyRepository
+from infrastructure.repository.fuel.lob_sa_repo import LOBRotaSQLAlchemyRepository
+from infrastructure.repository.fuel.lob_sa_repo import POSSQLAlchemyRepository
 from infrastructure.repository.core.subscription_sa_repo import PlansSQLAlchemyRepository
 from infrastructure.repository.core.subscription_sa_repo import SubscriptionOrdersSQLAlchemyRepository
 from infrastructure.repository.fuel.credit_sa_repo import VechiclesSQLAlchemyRepository

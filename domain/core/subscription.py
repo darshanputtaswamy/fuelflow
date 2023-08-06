@@ -6,19 +6,33 @@ import json
 from enum import Enum
 from datetime import datetime
 from domain.core.app_users import AppUsers
-from domain.core.lob import LOB
+from domain.fuel.lob import LOB
+
+class PlanType(str):
+    free = "free"
+    basic = "basic"
+    premium = "premium"
+
+class SubscriptionStatus(str):
+    active = "active"
+    inactive = "inactive"
+    pending = "pending"
+
+class PlanStatus(str):
+    active = "active"
+    inactive = "inactive"
 
 
 class Plans(BaseModel):
     uid: uuid.UUID
-    plan_type:str
+    plan_type:PlanType
     plan_name: str
     price: float
     period: int
     key: str
     retention_limit: int
     user_limit:int
-    status: str
+    status: PlanStatus
     created_date: datetime
     updated_date:Optional[datetime]
     class Config:
@@ -38,7 +52,7 @@ class SubscriptionOrders(BaseModel):
     plan_id:uuid.UUID
     paid_amount:float
     receipt_id:str
-    status:str
+    status:SubscriptionStatus
     payment_id:str
     order_id:str
     signature:str

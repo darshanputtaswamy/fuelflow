@@ -1,5 +1,5 @@
 from domain.core.app_users import AppUsers, AppUserVerification
-from domain.core.lob import LOB,LOBActivities,LOBRoles,LOBRota,LOBUserPrivilege,POS
+from domain.fuel.lob import LOB,LOBActivities,LOBRoles,LOBRota,LOBUserPrivilege,POS
 from domain.core.subscription import Plans,SubscriptionOrders
 
 from domain.fuel.registry import Record

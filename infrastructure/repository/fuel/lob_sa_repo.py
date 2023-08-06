@@ -1,6 +1,6 @@
 from infrastructure.repository.base import AbstractRepository
 from infrastructure.persistence.orm.models import LOBORM,LOBActivitiesORM,LOBRolesORM,LOBRotaORM,LOBUserPrivilegeORM,POSORM
-from domain.core.lob import LOB,LOBActivities,LOBRoles,LOBRota,LOBUserPrivilege,POS
+from domain.fuel.lob import LOB,LOBActivities,LOBRoles,LOBRota,LOBUserPrivilege,POS
 from sqlalchemy.orm import load_only
 
 
