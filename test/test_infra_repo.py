@@ -25,7 +25,7 @@ def test_infra_subscription_curd(session):
     repo.add(AppuserObj)
     session.commit()
 
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ", subscription_status="Active",   is_deleted="N",created_date=created)
+    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
     lobrepo = LOBSQLAlchemyRepository(session)
     lobrepo.add(lobObj)
     session.commit()
@@ -119,7 +119,7 @@ def test_infra_lobpos_curd(session):
     repo.add(AppuserObj)
     session.commit()
 
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ", subscription_status="Active",   is_deleted="N",created_date=created)
+    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
     lobrepo = LOBSQLAlchemyRepository(session)
     lobrepo.add(lobObj)
     session.commit()
@@ -170,7 +170,7 @@ def test_infra_lobrota_curd(session):
     repo.add(AppuserObj)
     session.commit()
 
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ", subscription_status="Active",   is_deleted="N",created_date=created)
+    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
     lobrepo = LOBSQLAlchemyRepository(session)
     lobrepo.add(lobObj)
     session.commit()
@@ -225,7 +225,7 @@ def test_infra_lobrota_curd(session):
 def test_infra_repo_lobRoles_crud(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ", subscription_status="Active",   is_deleted="N",created_date=created)
+    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
     lobrepo = LOBSQLAlchemyRepository(session)
     lobrepo.add(lobObj)
     session.commit()
@@ -260,7 +260,7 @@ def test_infra_repo_lobRoles_crud(session):
 def test_infra_repo_lobActivities_crud(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ", subscription_status="Active",   is_deleted="N",created_date=created)
+    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
     lobrepo = LOBSQLAlchemyRepository(session)
     lobrepo.add(lobObj)
     session.commit()
@@ -311,7 +311,7 @@ def test_infra_repo_lobUserPrivilege_crud(session):
     repo.add(AppuserObj)
     session.commit()
 
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ", subscription_status="Active",   is_deleted="N",created_date=created)
+    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",  is_deleted="N",created_date=created)
     lobrepo = LOBSQLAlchemyRepository(session)
     lobrepo.add(lobObj)
     session.commit()
@@ -356,7 +356,7 @@ def test_infra_repo_lob_crud(session):
     created=datetime.datetime.now()
 
 
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ", subscription_status="Active",   is_deleted="N",created_date=created)
+    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",  is_deleted="N",created_date=created)
     lobrepo = LOBSQLAlchemyRepository(session)
     lobrepo.add(lobObj)
     session.commit()
@@ -479,7 +479,7 @@ def test_infra_repo_appuser_verification_curd(session):
     assert res == [UVObject]
     
 
-    res= repo.deleteVerificationCode(id=UVObject.uid)
+    res= repo.deleteVerificationCode(uid=UVObject.uid)
     session.commit()
 
     res= repo.getVerificationCode(user_uid=str(arr[0]))

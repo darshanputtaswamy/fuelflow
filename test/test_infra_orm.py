@@ -397,7 +397,7 @@ def test_infra_orm_lob_rota(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
     appuser=AppUsers(uid=str(arr[0]), username="testing", phone="testing description",   email="darshan.px@oracle.com", password="SR",   user_type="TTR",is_locked="TESTING",is_verified="TESTING", created_date=created,is_deleted="TESTING")
-    lob=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ", subscription_status="Active",   is_deleted="Y",created_date=created)
+    lob=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="Y",created_date=created)
 
     session.add_all([
         LOBORM(**lob.dict()),
@@ -463,7 +463,6 @@ def test_infra_orm_lob_creation(session):
             address="testing",
             postal_code="testing",
             gst_number="testing ",
-            subscription_status="Active",   
             is_deleted="Y",
             created_date=created)
     

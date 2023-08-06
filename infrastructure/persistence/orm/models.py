@@ -86,7 +86,6 @@ class LOBORM(Base):
    address: Mapped[str]
    postal_code: Mapped[str]
    gst_number: Mapped[str] 
-   subscription_status:Mapped[str]
    is_deleted:Mapped[str]
    created_date: Mapped[datetime] 
    updated_date: Mapped[Optional[datetime]] 

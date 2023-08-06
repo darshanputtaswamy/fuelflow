@@ -15,7 +15,6 @@ class LOB(BaseModel):
     address: str
     postal_code: str
     gst_number: str
-    subscription_status:str
     is_deleted: str
     created_date: datetime
     updated_date: Optional[datetime]
