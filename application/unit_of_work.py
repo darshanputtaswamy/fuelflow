@@ -11,7 +11,8 @@ from infrastructure.repository.fuel.lob_sa_repo import LOBUserPrivilegeSQLAlchem
 from infrastructure.repository.fuel.lob_sa_repo import LOBRotaSQLAlchemyRepository
 from infrastructure.repository.fuel.lob_sa_repo import POSSQLAlchemyRepository
 from infrastructure.repository.core.subscription_sa_repo import PlansSQLAlchemyRepository
-from infrastructure.repository.core.subscription_sa_repo import SubscriptionOrdersSQLAlchemyRepository
+from infrastructure.repository.core.subscription_sa_repo import SubscriptionSQLAlchemyRepository
+from infrastructure.repository.core.subscription_sa_repo import SubscriptionPaymentOrderSQLAlchemyRepository
 from infrastructure.repository.fuel.credit_sa_repo import VechiclesSQLAlchemyRepository
 from infrastructure.repository.fuel.credit_sa_repo import OrderSQLAlchemyRepository
 from infrastructure.repository.fuel.credit_sa_repo import OrderLineItemSQLAlchemyRepository
@@ -36,6 +37,7 @@ class AbstractUnitOfWork(abc.ABC):
     fuel_unloader: AbstractRepository
     plans: AbstractRepository
     subscription: AbstractRepository
+    PaymentOrder: AbstractRepository
     
 
     def __enter__(self) -> AbstractUnitOfWork:
@@ -74,6 +76,7 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         self.fuel_unloader: None
         self.plans: None
         self.subscription: None
+        self.payment:None
 
     def __enter__(self):
         self.session = self.session_factory.create_session()  
@@ -91,7 +94,8 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         self.fueldip_reader= FuelDipReaderSQLAlchemyRepository(self.session)
         self.fuel_unloader= UnloaderSQLAlchemyRepository(self.session)
         self.plans= PlansSQLAlchemyRepository(self.session)
-        self.subscription= SubscriptionOrdersSQLAlchemyRepository(self.session)
+        self.subscription= SubscriptionSQLAlchemyRepository(self.session)
+        self.payment= SubscriptionPaymentOrderSQLAlchemyRepository(self.session)
 
         return super().__enter__()
 

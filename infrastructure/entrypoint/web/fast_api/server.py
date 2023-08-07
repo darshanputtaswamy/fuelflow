@@ -11,6 +11,8 @@ from .auth import AuthHandler
 import os 
 import pandas as pd
 from .router.user_router import user_router
+from .router.subscription_router import subscription_router
+
 from .exception import CustomHTTPException
 
 app = FastAPI()
@@ -43,7 +45,8 @@ async def custom_exception_handler(request: Request, exc: CustomHTTPException):
     return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, 
         content={"message": f"{exc.message}" })
 
-app.include_router(user_router)
+app.include_router(user_router, prefix="/user", tags=["User"])
+app.include_router(subscription_router, prefix="/subscription", tags=["Subscription"])
 
 
 

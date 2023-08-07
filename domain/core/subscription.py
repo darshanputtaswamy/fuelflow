@@ -16,7 +16,6 @@ class PlanType(str):
 class SubscriptionStatus(str):
     active = "active"
     inactive = "inactive"
-    pending = "pending"
 
 class PlanStatus(str):
     active = "active"
@@ -45,19 +44,39 @@ class Plans(BaseModel):
         return self.uid == other.uid
     
 
-class SubscriptionOrders(BaseModel):
+class Subscription(BaseModel):
     uid: uuid.UUID
     lob_uid:uuid.UUID
     initiated_user_uid:uuid.UUID
     plan_id:uuid.UUID
-    paid_amount:float
-    receipt_id:str
+    plan_start_date:Optional[datetime]
     status:SubscriptionStatus
-    payment_id:str
-    order_id:str
-    signature:str
     created_date:datetime
     updated_date:Optional[datetime]
+
+    class Config:
+            orm_mode = True
+            
+    def __hash__(self):
+        return hash(str(self.uid))
+
+    def __eq__(self,other):
+        return self.uid == other.uid
+
+
+
+class SubscriptionPaymentOrder(BaseModel):
+    uid: uuid.UUID
+    subscription_uid: uuid.UUID
+    receipt_id:str
+    payable_amount:float
+    pyament_id:str
+    order_id:str
+    signature:str
+    status:str
+    created_at:datetime
+    updated_at:Optional[datetime]
+  
 
     class Config:
             orm_mode = True

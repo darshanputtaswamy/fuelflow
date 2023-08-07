@@ -18,7 +18,7 @@ def sendVerificationSME(code):
 
 
 
-@user_router.get("/user")
+@user_router.get("/")
 async def list_users():
     # Get user logic here
     try:
@@ -49,7 +49,7 @@ async def create_user(
         raise CustomHTTPException(message=e)
 
 
-@user_router.get("/user/{id}/profile")
+@user_router.get("/{id}/profile")
 async def get_user(id: str):
     # Get user logic here
     try:
@@ -63,7 +63,7 @@ async def get_user(id: str):
 
 
 #TODO: get rid of id from url instead use jwt token
-@user_router.put("/user/password")
+@user_router.put("/password")
 async def change_password(id:str=  Form(...), new_password:str = Form(...)):
     try:
         users=user_service.update_user_password(user_id=id,password=new_password)
@@ -72,7 +72,7 @@ async def change_password(id:str=  Form(...), new_password:str = Form(...)):
         raise CustomHTTPException(message=e)
 
 
-@user_router.put("/user/lock")
+@user_router.put("/lock")
 async def change_password(id:str=  Form(...), status=Form(...)):
     try:
         users=user_service.lock_user(user_id=id,status=status)
@@ -80,7 +80,7 @@ async def change_password(id:str=  Form(...), status=Form(...)):
     except Exception as e:
         raise CustomHTTPException(message=e)
 
-@user_router.put("/user/username")
+@user_router.put("/username")
 async def change_password(id:str=  Form(...), username=Form(...)):
     try:
         users=user_service.update_username(user_id=id,username=username)
@@ -89,7 +89,7 @@ async def change_password(id:str=  Form(...), username=Form(...)):
         raise CustomHTTPException(message=e)
     
 
-@user_router.put("/user/user_type")
+@user_router.put("/user_type")
 async def change_password(id:str=  Form(...), type=Form(...)):
     try:
         users=user_service.update_user_type(user_id=id,value=type)
@@ -99,7 +99,7 @@ async def change_password(id:str=  Form(...), type=Form(...)):
     
     
 
-@user_router.delete("/user/{id}")
+@user_router.delete("/{id}")
 async def delete_user(id: str):
     try:
         users=user_service.hard_delete_user(user_id=id)
@@ -110,7 +110,7 @@ async def delete_user(id: str):
     
 
 #TODO: get rid of id from url instead use jwt token
-@user_router.post("/user/verify")
+@user_router.post("/verify")
 async def verify_user(id:str=  Form(...), verification_code:str = Form(...)):
     # Verify user logic here
     try: 
@@ -125,7 +125,7 @@ async def verify_user(id:str=  Form(...), verification_code:str = Form(...)):
     
 
 #TODO: get rid of id from url instead use jwt token
-@user_router.get("/user/resend-verification/{id}")
+@user_router.get("/resend-verification/{id}")
 async def resend_verification(id: str):
     # Verify user logic here
     try: 

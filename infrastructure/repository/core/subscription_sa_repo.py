@@ -1,6 +1,6 @@
 from infrastructure.repository.base import AbstractRepository
-from infrastructure.persistence.orm.models import PlansORM,SubscriptionOrdersORM
-from domain.core.subscription import Plans, SubscriptionOrders
+from infrastructure.persistence.orm.models import PlansORM,SubscriptionORM,SubscriptionPaymentOrderORM
+from domain.core.subscription import Plans, Subscription,SubscriptionPaymentOrder
 from sqlalchemy.orm import load_only
 
 
@@ -56,53 +56,101 @@ class PlansSQLAlchemyRepository(AbstractRepository):
 
 
 
-class SubscriptionOrdersSQLAlchemyRepository(AbstractRepository):
+class SubscriptionSQLAlchemyRepository(AbstractRepository):
     def __init__(self, session):
         self.session = session
 
     def add(self, sub):
-        sub_in_orm=SubscriptionOrdersORM(**sub.dict())
+        sub_in_orm=SubscriptionORM(**sub.dict())
         self.session.add(sub_in_orm)
     
     def get(self, id):
-         sub_in_orm=self.session.get(SubscriptionOrdersORM,str(id))
+         sub_in_orm=self.session.get(SubscriptionORM,str(id))
          if sub_in_orm is not None:
-            return SubscriptionOrders.from_orm(sub_in_orm)
+            return Subscription.from_orm(sub_in_orm)
          else:
              return None
 
     def list(self):
-        sub_in_orm=self.session.query(SubscriptionOrdersORM).all()
+        sub_in_orm=self.session.query(SubscriptionORM).all()
         res=[]
         for s in sub_in_orm:
-            res.append(SubscriptionOrders.from_orm(s))
+            res.append(Subscription.from_orm(s))
         return res
 
     def getByReference(self, **reference):
-        sh_in_orm=self.session.query(SubscriptionOrdersORM).filter_by(**reference)
+        sh_in_orm=self.session.query(SubscriptionORM).filter_by(**reference)
         res=[]
         for sh in sh_in_orm:
-            res.append(SubscriptionOrders.from_orm(sh))
+            res.append(Subscription.from_orm(sh))
         return res
     
 
     def delete(self,id):
-        sub_in_orm=self.session.get(SubscriptionOrdersORM,str(id))
+        sub_in_orm=self.session.get(SubscriptionORM,str(id))
         self.session.delete(sub_in_orm)
 
 
     def update(self,user):
         tdict=user.dict()
         tdict['uid']=str(tdict['uid'])
-        sub_in_orm=self.session.get(SubscriptionOrdersORM,tdict['uid'])
+        sub_in_orm=self.session.get(SubscriptionORM,tdict['uid'])
         sub_in_orm.lob_uid = str(tdict['lob_uid'])
         sub_in_orm.initiated_user_uid = str(tdict['initiated_user_uid'])
         sub_in_orm.plan_id =str(tdict['plan_id'])
-        sub_in_orm.paid_amount = tdict['paid_amount']
-        sub_in_orm.receipt_id = tdict['receipt_id']
+        sub_in_orm.plan_start_date = tdict['plan_start_date']
         sub_in_orm.status = tdict['status']
+        sub_in_orm.updated_date=tdict['updated_date']
+        self.session.add(sub_in_orm)
+
+
+
+
+class SubscriptionPaymentOrderSQLAlchemyRepository(AbstractRepository):
+    def __init__(self, session):
+        self.session = session
+
+    def add(self, sub):
+        sub_in_orm=SubscriptionPaymentOrderORM(**sub.dict())
+        self.session.add(sub_in_orm)
+    
+    def get(self, id):
+         sub_in_orm=self.session.get(SubscriptionPaymentOrderORM,str(id))
+         if sub_in_orm is not None:
+            return SubscriptionPaymentOrder.from_orm(sub_in_orm)
+         else:
+             return None
+
+    def list(self):
+        sub_in_orm=self.session.query(SubscriptionPaymentOrderORM).all()
+        res=[]
+        for s in sub_in_orm:
+            res.append(SubscriptionPaymentOrder.from_orm(s))
+        return res
+
+    def getByReference(self, **reference):
+        sh_in_orm=self.session.query(SubscriptionPaymentOrderORM).filter_by(**reference)
+        res=[]
+        for sh in sh_in_orm:
+            res.append(SubscriptionPaymentOrder.from_orm(sh))
+        return res
+    
+
+    def delete(self,id):
+        sub_in_orm=self.session.get(SubscriptionPaymentOrderORM,str(id))
+        self.session.delete(sub_in_orm)
+
+
+    def update(self,user):
+        tdict=user.dict()
+        tdict['uid']=str(tdict['uid'])
+        sub_in_orm=self.session.get(SubscriptionPaymentOrderORM,tdict['uid'])
+        sub_in_orm.subscription_uid = str(tdict['subscription_uid'])
+        sub_in_orm.receipt_id = str(tdict['receipt_id'])
+        sub_in_orm.payable_amount =str(tdict['payable_amount'])
         sub_in_orm.payment_id=tdict['payment_id']
         sub_in_orm.order_id=tdict['order_id']
         sub_in_orm.signature=tdict['signature']
+        sub_in_orm.status = tdict['status']
         sub_in_orm.updated_date=tdict['updated_date']
         self.session.add(sub_in_orm)

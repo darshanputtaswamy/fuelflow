@@ -56,12 +56,26 @@ class PlansORM(Base):
    def __repr__(self) -> str:
       return f"Plans(id={self.uid!r}, plan_name={self.plan_name!r})"
 
-class SubscriptionOrdersORM(Base):
-   __tablename__ = 'subscription_orders'
+class SubscriptionORM(Base):
+   __tablename__ = 'subscription'
    uid: Mapped[str] = mapped_column(primary_key=True)
    lob_uid: Mapped[str] =  mapped_column(ForeignKey("lob.uid"))
    initiated_user_uid:Mapped[str] =  mapped_column(ForeignKey("app_users.uid"))
    plan_id:Mapped[str] = mapped_column(ForeignKey("plans.uid"))
+   plan_start_date: Mapped[Optional[datetime]] 
+   status:Mapped[str]
+   created_date: Mapped[datetime] 
+   updated_date: Mapped[Optional[datetime]] 
+   plan_details:Mapped["PlansORM"] = relationship("PlansORM")
+   lob_details:Mapped["LOBORM"] = relationship(back_populates="subscription_history")
+   
+   def __repr__(self) -> str:
+      return f"SubscriptionOrders(lob_uid={self.lob_uid!r}, initiated_user={self.initiated_user!r}, created_date={self.created_date}, plan_id={self.plan_id}, status={self.status})"
+   
+class SubscriptionPaymentOrderORM(Base):
+   __tablename__ = 'subscription_payment_orders'
+   uid: Mapped[str] = mapped_column(primary_key=True)
+   subscription_uid: Mapped[str] =  mapped_column(ForeignKey("subscription.uid"))
    paid_amount:Mapped[float] 
    receipt_id:Mapped[str]
    status:Mapped[str]
@@ -70,13 +84,10 @@ class SubscriptionOrdersORM(Base):
    signature:Mapped[str]
    created_date: Mapped[datetime] 
    updated_date: Mapped[Optional[datetime]] 
-   plan_details:Mapped["PlansORM"] = relationship("PlansORM")
-   lob_details:Mapped["LOBORM"] = relationship(back_populates="subscription_history")
    
    def __repr__(self) -> str:
-      return f"SubscriptionOrders(lob_uid={self.lob_uid!r}, initiated_user={self.initiated_user!r}, created_date={self.created_date}, paid_amount={self.paid_amount}, status={self.status})"
+      return f"SubscriptionPaymentOrders(payment_id={self.payment_id!r}, subscription_uid={self.subscription_uid!r}, created_date={self.created_date}, paid_amount={self.paid_amount}, status={self.status})"
    
-
 
 class LOBORM(Base):
    __tablename__ = 'lob'
@@ -93,7 +104,7 @@ class LOBORM(Base):
    lob_user_roles: Mapped[Optional[List["LOBUserPrivilegeORM"]]] = relationship(
         back_populates="lob_details", cascade="all, delete-orphan")
    
-   subscription_history:Mapped[Optional[list["SubscriptionOrdersORM"]]] = relationship(
+   subscription_history:Mapped[Optional[list["SubscriptionORM"]]] = relationship(
         back_populates="lob_details", cascade="all, delete-orphan")
    
    pos_list:Mapped[Optional[List["POSORM"]]]  =  relationship(back_populates="lob_details", cascade="all, delete-orphan") 

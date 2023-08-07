@@ -1,11 +1,11 @@
 from domain.core.app_users import AppUsers,AppUserVerification
 from domain.fuel.lob import LOB,LOBActivities,LOBRoles,LOBRota,LOBUserPrivilege,POS
-from domain.core.subscription import Plans, SubscriptionOrders
+from domain.core.subscription import Plans, Subscription,SubscriptionPaymentOrder
 from infrastructure.repository.core.app_users_sa_repo import AppUsersSQLAlchemyRepository
 from infrastructure.repository.fuel.lob_sa_repo import LOBSQLAlchemyRepository,LOBActivitiesSQLAlchemyRepository,LOBRolesSQLAlchemyRepository,LOBUserPrivilegeSQLAlchemyRepository,LOBRotaSQLAlchemyRepository,POSSQLAlchemyRepository
-from infrastructure.repository.core.subscription_sa_repo import PlansSQLAlchemyRepository,SubscriptionOrdersSQLAlchemyRepository
+from infrastructure.repository.core.subscription_sa_repo import PlansSQLAlchemyRepository,SubscriptionSQLAlchemyRepository, SubscriptionPaymentOrderSQLAlchemyRepository
 
-from infrastructure.persistence.orm.models import AppUsersORM,PlansORM,SubscriptionOrdersORM,AppUserVerificationORM,LOBORM,LOBUserPrivilegeORM,POSORM,LOBActivitiesORM,LOBRolesORM,LOBRotaORM,FuelRegistryORM,LOBCreditVehiclesORM,LOBCreditOrdersORM,LOBCreditOrderLineItemsORM,FuelDipReaderORM,FuelUnloadingBookORM
+from infrastructure.persistence.orm.models import AppUsersORM,PlansORM,SubscriptionORM,SubscriptionPaymentOrderORM,AppUserVerificationORM,LOBORM,LOBUserPrivilegeORM,POSORM,LOBActivitiesORM,LOBRolesORM,LOBRotaORM,FuelRegistryORM,LOBCreditVehiclesORM,LOBCreditOrdersORM,LOBCreditOrderLineItemsORM,FuelDipReaderORM,FuelUnloadingBookORM
 from datetime import datetime
 import uuid
 from sqlalchemy import  select
@@ -36,17 +36,17 @@ def test_infra_subscription_curd(session):
     planrepo.add(planObj)
     session.commit()
 
-    subObj=SubscriptionOrders(uid=str(arr[3]),lob_uid=str(arr[1]),initiated_user_uid=str(arr[0]),plan_id=str(arr[2]),paid_amount=1,receipt_id="1212",status="Pending",payment_id="testing",order_id="testing",signature="testing",created_date=created)
+    subObj=Subscription(uid=str(arr[3]),lob_uid=str(arr[1]),initiated_user_uid=str(arr[0]),plan_id=str(arr[2]),paid_amount=1,receipt_id="1212",status="Pending",payment_id="testing",order_id="testing",signature="testing",created_date=created)
 
-    subRepo = SubscriptionOrdersSQLAlchemyRepository(session)
+    subRepo = SubscriptionSQLAlchemyRepository(session)
     subRepo.add(subObj)
     session.commit()
 
 
-    subs=session.query(SubscriptionOrdersORM).all()
+    subs=session.query(SubscriptionORM).all()
     actual = []
     for p in subs:
-        actual.append(SubscriptionOrders.from_orm(p))
+        actual.append(Subscription.from_orm(p))
 
     expected = []
     expected.append(subObj)
