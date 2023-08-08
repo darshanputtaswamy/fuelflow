@@ -1,6 +1,6 @@
 from infrastructure.repository.base import AbstractRepository
 from infrastructure.persistence.orm.models import LOBCreditVehiclesORM,LOBCreditOrdersORM,LOBCreditOrderLineItemsORM
-from domain.fuel.credit import Vehicles, Orders, OrdersLineItem
+from domain.fuelflow.credit import Vehicles, Orders, OrdersLineItem
 from sqlalchemy.orm import load_only
 
 

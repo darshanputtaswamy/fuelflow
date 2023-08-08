@@ -2,9 +2,10 @@ from fastapi import APIRouter
 from fastapi import Depends,FastAPI, Form,Request,status, HTTPException,Response,File, UploadFile
 from infrastructure.persistence.database.DatabaseSessionFactory import DatabaseSessionFactory
 from application.unit_of_work import SqlAlchemyUnitOfWork
-from application.subscription.subscription_service import SubscriptionService
+from application.subscription.service import SubscriptionService
 from fastapi.responses import JSONResponse
 from ..exception import CustomHTTPException
+from typing import Optional, Literal
 
 sqlaclk_uow= SqlAlchemyUnitOfWork(DatabaseSessionFactory)
 subscription_router = APIRouter()
@@ -80,3 +81,61 @@ async def get_plan_details(id:str):
        return plan
     except Exception as e:
         raise CustomHTTPException(message=e)
+    
+
+@subscription_router.post("/subscribe")
+async def subscribe(lob_uid:str,initiated_user_uid:str,plan_id:str):
+    try:
+       
+       plan=subscription_service.create_subscription(lob_uid,initiated_user_uid,plan_id)
+       return plan
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+
+
+@subscription_router.get("/{lob_uid}")
+async def get_subscription_for_lob(lob_uid:str, status: Optional[Literal["PENDING", "ACTIVE","EXPIRED", "NEEDS_RENEWAL"]] = None):
+    try:
+       sub=subscription_service.get_subscription(lob_uid,status)
+       return sub
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+
+
+@subscription_router.get("/")
+async def get_subscription(status: Optional[Literal["PENDING", "ACTIVE","EXPIRED", "NEEDS_RENEWAL"]] = None):
+    try:
+       sub=subscription_service.get_subscription(None, status)
+       return sub
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+@subscription_router.delete("/{lob_uid}/{subscription_uid}")
+async def delete_pending_subscription(lob_uid:str, subscription_uid: str):
+    try:
+       sub=subscription_service.delete_pending_subscription(lob_uid,subscription_uid)
+       return sub
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+
+
+@subscription_router.post("/payment/order")
+async def create_payment_order_for_subscription(subscription_uid:str):
+    try:
+       sub=subscription_service.get_subscription_id(subscription_uid)
+       #return sub
+       return None
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@subscription_router.post("/payment/verify")
+async def payment_verify():
+    try:
+       #
+       #return sub
+       return None
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+
+

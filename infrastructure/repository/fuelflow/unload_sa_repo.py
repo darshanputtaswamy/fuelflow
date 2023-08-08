@@ -1,6 +1,6 @@
 from infrastructure.repository.base import AbstractRepository
 from infrastructure.persistence.orm.models import FuelDipReaderORM,FuelUnloadingBookORM
-from domain.fuel.unloader import FuelDipReader,FuelUnloadingBook
+from domain.fuelflow.unloader import FuelDipReader,FuelUnloadingBook
 from sqlalchemy.orm import load_only
 
 

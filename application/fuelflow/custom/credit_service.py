@@ -1,3 +1,4 @@
+'''
 from domain.core.permission import Permission
 import uuid
 
@@ -41,3 +42,4 @@ class PermissionManager:
     def list_user_for_rca(self,rca_id):
         with self.uow:
             return self.uow.permissions.getByReference(rca_id=rca_id) 
+'''

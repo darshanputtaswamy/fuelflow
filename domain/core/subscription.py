@@ -6,7 +6,7 @@ import json
 from enum import Enum
 from datetime import datetime
 from domain.core.app_users import AppUsers
-from domain.fuel.lob import LOB
+from domain.fuelflow.lob import LOB
 
 class PlanType(str):
     free = "free"

@@ -1,7 +1,7 @@
 from warnings import catch_warnings
 #from application.lob.lob_service import LobService
 #from application.subscription.subscription_service import SubscriptionService
-from application.user.user_service import UserService
+from application.user.service import UserService
 import datetime
 import uuid
 import shutil

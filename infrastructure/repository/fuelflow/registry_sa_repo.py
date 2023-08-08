@@ -1,6 +1,6 @@
 from infrastructure.repository.base import AbstractRepository
 from infrastructure.persistence.orm.models import FuelRegistryORM
-from domain.fuel.registry import Record
+from domain.fuelflow.registry import Record
 from sqlalchemy.orm import load_only
 
 

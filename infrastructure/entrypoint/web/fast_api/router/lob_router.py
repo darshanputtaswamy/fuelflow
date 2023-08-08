@@ -2,13 +2,16 @@ from fastapi import APIRouter
 from fastapi import Depends,FastAPI, Form,Request,status, HTTPException,Response,File, UploadFile
 from infrastructure.persistence.database.DatabaseSessionFactory import DatabaseSessionFactory
 from application.unit_of_work import SqlAlchemyUnitOfWork
-from application.user.service import UserService
+from application.fuelflow.service import FuelFlowService
 from fastapi.responses import JSONResponse
 from ..exception import CustomHTTPException
+from .lob_sub_routers.unload_router import unload_router
+from .lob_sub_routers.credit_router import credit_router
+from .lob_sub_routers.registry_router import registry_router
 
 sqlaclk_uow= SqlAlchemyUnitOfWork(DatabaseSessionFactory)
-user_router = APIRouter()
-user_service=UserService(sqlaclk_uow)
+lob_router = APIRouter()
+lob_service=FuelFlowService(sqlaclk_uow)
 
 def getverificationcode():
     return "newverificationcode"
@@ -18,19 +21,19 @@ def sendVerificationSME(code):
 
 
 
-@user_router.get("/")
+@lob_router.get("/")
 async def list_users():
     # Get user logic here
     try:
 
-        users=user_service.get_users()
+        users=lob_service.get_users()
         return users
     
     except Exception as e:
         raise CustomHTTPException(message=e)
 
 
-@user_router.post("/register")
+@lob_router.post("/register")
 async def create_user(
     username: str = Form(...), 
     phone: str = Form(...),
@@ -39,9 +42,9 @@ async def create_user(
 ):
     try:
 
-        id=user_service.add_user(username,phone,email,password)
+        id=lob_service.add_user(username,phone,email,password)
         nv=getverificationcode()
-        user_service.save_user_verification_code(user_id=id,verification_code=nv)
+        lob_service.save_user_verification_code(user_id=id,verification_code=nv)
         sendVerificationSME(nv)
         return {"message": "User created successfully : " +str(id)}
     
@@ -49,12 +52,12 @@ async def create_user(
         raise CustomHTTPException(message=e)
 
 
-@user_router.get("/{id}/profile")
+@lob_router.get("/{id}/profile")
 async def get_user(id: str):
     # Get user logic here
     try:
 
-        user=user_service.get_user_by_id(uid=id)
+        user=lob_service.get_user_by_id(uid=id)
         return user
     
     except Exception as e:
@@ -63,46 +66,46 @@ async def get_user(id: str):
 
 
 #TODO: get rid of id from url instead use jwt token
-@user_router.put("/password")
+@lob_router.put("/password")
 async def change_password(id:str=  Form(...), new_password:str = Form(...)):
     try:
-        users=user_service.update_user_password(user_id=id,password=new_password)
+        users=lob_service.update_user_password(user_id=id,password=new_password)
         return {"message": f"Password updated successfully for user ID {id}"}
     except Exception as e:
         raise CustomHTTPException(message=e)
 
 
-@user_router.put("/lock")
+@lob_router.put("/lock")
 async def change_password(id:str=  Form(...), status=Form(...)):
     try:
-        users=user_service.lock_user(user_id=id,status=status)
+        users=lob_service.lock_user(user_id=id,status=status)
         return {"message": f"User {id}'s lock status is set to - {status} successfully"}
     except Exception as e:
         raise CustomHTTPException(message=e)
 
-@user_router.put("/username")
+@lob_router.put("/username")
 async def change_password(id:str=  Form(...), username=Form(...)):
     try:
-        users=user_service.update_username(user_id=id,username=username)
+        users=lob_service.update_username(user_id=id,username=username)
         return {"message": f"User {id}'s username is set to - {username} successfully"}
     except Exception as e:
         raise CustomHTTPException(message=e)
     
 
-@user_router.put("/user_type")
+@lob_router.put("/user_type")
 async def change_password(id:str=  Form(...), type=Form(...)):
     try:
-        users=user_service.update_user_type(user_id=id,value=type)
+        users=lob_service.update_user_type(user_id=id,value=type)
         return {"message": f"User {id}'s user_type is set to - {type} successfully"}
     except Exception as e:
         raise CustomHTTPException(message=e)
     
     
 
-@user_router.delete("/{id}")
+@lob_router.delete("/{id}")
 async def delete_user(id: str):
     try:
-        users=user_service.hard_delete_user(user_id=id)
+        users=lob_service.hard_delete_user(user_id=id)
         print("after return")
         return {"message": f"User {id} deleted successfully"}
     except Exception as e:
@@ -110,13 +113,13 @@ async def delete_user(id: str):
     
 
 #TODO: get rid of id from url instead use jwt token
-@user_router.post("/verify")
+@lob_router.post("/verify")
 async def verify_user(id:str=  Form(...), verification_code:str = Form(...)):
     # Verify user logic here
     try: 
-        saved_verification_code = user_service.get_user_verification_code(user_id=id)
+        saved_verification_code = lob_service.get_user_verification_code(user_id=id)
         if saved_verification_code == verification_code:
-            user_service.is_verified(user_id=id)
+            lob_service.is_verified(user_id=id)
             return {"message": "User verified successfully"}
         else:
             raise "verification failed" 
@@ -125,28 +128,31 @@ async def verify_user(id:str=  Form(...), verification_code:str = Form(...)):
     
 
 #TODO: get rid of id from url instead use jwt token
-@user_router.get("/resend-verification/{id}")
+@lob_router.get("/resend-verification/{id}")
 async def resend_verification(id: str):
     # Verify user logic here
     try: 
         nv=getverificationcode()
-        user_service.save_user_verification_code(user_id=id,verification_code=nv)
+        lob_service.save_user_verification_code(user_id=id,verification_code=nv)
         sendVerificationSME(nv)
         return {"message": "Verification email sent successfully"}
     except Exception as e:
         raise CustomHTTPException(message=e)
 
+#lob_router.include_router(unload_router, prefix="/unloader", tags=["Unloader"])
+#lob_router.include_router(credit_router, prefix="/creditor", tags=["Creditor"])
+#lob_router.include_router(registry_router, prefix="/registry", tags=["Registry"])
     
 '''
 # Additional Endpoints
 
-@user_router.post("/users/login")
+@lob_router.post("/users/login")
 async def user_login(credentials: UserCredentials):
     # User login logic here
     return {"access_token": "jwt_token"}
 
 
-@user_router.post("/refresh", response_model=Token)
+@lob_router.post("/refresh", response_model=Token)
 async def refresh_token(token_refresh: TokenRefresh, authorize: AuthJWT = Depends()):
     authorize.jwt_refresh_token_required()
 
@@ -156,7 +162,7 @@ async def refresh_token(token_refresh: TokenRefresh, authorize: AuthJWT = Depend
 
     return {"access_token": new_access_token, "refresh_token": token_refresh.refresh_token}
 
-@user_router.post("/users/logout")
+@lob_router.post("/users/logout")
 async def user_logout():
     # User logout logic here
     return {"message": "User logged out successfully"}

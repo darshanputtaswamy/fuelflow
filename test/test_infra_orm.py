@@ -1,10 +1,10 @@
 from domain.core.app_users import AppUsers, AppUserVerification
-from domain.fuel.lob import LOB,LOBActivities,LOBRoles,LOBRota,LOBUserPrivilege,POS
+from domain.fuelflow.lob import LOB,LOBActivities,LOBRoles,LOBRota,LOBUserPrivilege,POS
 from domain.core.subscription import Plans,Subscription,SubscriptionPaymentOrder
 
-from domain.fuel.registry import Record
-from domain.fuel.credit import Vehicles,Orders,OrdersLineItem
-from domain.fuel.unloader import FuelUnloadingBook,FuelDipReader
+from domain.fuelflow.registry import Record
+from domain.fuelflow.credit import Vehicles,Orders,OrdersLineItem
+from domain.fuelflow.unloader import FuelUnloadingBook,FuelDipReader
 
 from infrastructure.persistence.orm.models import AppUsersORM,PlansORM,SubscriptionORM,SubscriptionPaymentOrderORM,AppUserVerificationORM,LOBORM,LOBUserPrivilegeORM,POSORM,LOBActivitiesORM,LOBRolesORM,LOBRotaORM,FuelRegistryORM,LOBCreditVehiclesORM,LOBCreditOrdersORM,LOBCreditOrderLineItemsORM,FuelDipReaderORM,FuelUnloadingBookORM
 from datetime import datetime
