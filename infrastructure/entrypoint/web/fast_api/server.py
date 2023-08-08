@@ -47,7 +47,7 @@ async def custom_exception_handler(request: Request, exc: CustomHTTPException):
 
 app.include_router(user_router, prefix="/user", tags=["User"])
 app.include_router(subscription_router, prefix="/subscription", tags=["Subscription"])
-app.include_router(lob_router, prefix="/lob", tags=["Store"])
+app.include_router(lob_router, prefix="/store", tags=["Store"])
 
 
 '''

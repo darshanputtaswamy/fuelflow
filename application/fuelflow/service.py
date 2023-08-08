@@ -2,26 +2,24 @@ from domain.core.subscription import Plans,Subscription,SubscriptionPaymentOrder
 from domain.fuelflow.lob import LOB,LOBActivities,LOBRoles,LOBUserPrivilege
 import uuid
 import datetime
+from .custom.privileges_service import PrivilegeService
 
-
-class FuelFlowService:
+class FuelFlowService(PrivilegeService):
     def __init__(self,uow):
         self.uow=uow
+        super().__init__(uow)
 
     def create_lob(self,buisness_name,type,address,postal_code,gst_number,user_uid):
         with self.uow:
             created=datetime.datetime.now()            
             lob_id=uuid.uuid4()
-            uid=uuid.uuid4()
             user = self.uow.user.get(id=user_uid)
             if not user:
                     raise Exception("User "+str(user_uid)+" not found")
             lob=LOB(uid=str(lob_id),buisness_name=buisness_name,type=type,address=address,postal_code=postal_code, gst_number=gst_number, is_deleted='N', created_date=created)
-            userPrivilege=LOBUserPrivilege(uid=str(uid),user_uid=user_uid,lob_uid=str(lob_id),role='OWNER',created_date=created)
             self.uow.lob.add(lob)
             self.uow.commit()
-            self.uow.lob_user_privileges.add(userPrivilege)
-            self.uow.commit()
+            self.create_privilege_record(user_uid=user_uid,lob_uid=lob_id,role='OWNER')
             return lob
         
     def update_lob_buisness_name(self,lob_uid,buisness_name):
@@ -106,7 +104,7 @@ class FuelFlowService:
             user = self.uow.user.get(user_id)
             if not user:
                     raise Exception("User "+str(user_id)+" not found")
-            records = self.uow.lob_user_privileges.getByReference(user_uid=user_id)
+            records = self.get_privilege_record_by_user(user_id)
             res=[]
             for record in records:
                 res.append( self.uow.lob.get(record.lob_uid))
