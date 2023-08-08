@@ -49,6 +49,7 @@ class LOBSQLAlchemyRepository(AbstractRepository):
         lob_in_orm.address =tdict['address']
         lob_in_orm.postal_code = tdict['postal_code']
         lob_in_orm.is_deleted = tdict['is_deleted']
+        lob_in_orm.gst_number = tdict['gst_number']
         lob_in_orm.updated_date=tdict['updated_date']
         self.session.add(lob_in_orm)
 

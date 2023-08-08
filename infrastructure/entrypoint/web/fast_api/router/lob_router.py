@@ -13,51 +13,103 @@ sqlaclk_uow= SqlAlchemyUnitOfWork(DatabaseSessionFactory)
 lob_router = APIRouter()
 lob_service=FuelFlowService(sqlaclk_uow)
 
-def getverificationcode():
-    return "newverificationcode"
 
-def sendVerificationSME(code):
-    print("new verification code is"+ code)
+'''
+GET /lob/all
+GET /lob   
+GET /lob/{uid}
+POST /lob
+DELETE /lob
+PUT /lob 
+
+GET /lob/activities
+GET /lob/activities/{lob_uid}
+POST /lob/activities/{lob_uid}
+DELETE /lob/activities
 
 
+GET /lob/roles
+GET /lob/roles/{lob_uid}
+POST /lob/roles/{uid}
+DELETE /lob/roles/{uid}
 
-@lob_router.get("/")
-async def list_users():
+GET /lob/privilege
+GET /lob/privilege/{lob_uid}
+POST /lob/privilege/{uid}
+DELETE /lob/privilege/{uid}
+
+GET /lob/rota
+GET /lob/rota/{lob_uid}
+POST /lob/rota/{lob_uid}
+PUT /lob/rota/{uid}
+DELETE /lob/rota/{uid}
+
+
+GET /lob/pos
+GET /lob/pos/{lob_uid}
+POST /lob/pos/{lob_uid}
+PUT /lob/pos/{lob_uid}
+DELETE /lob/pos/{uid}
+
+'''
+
+@lob_router.get("/all")
+async def list_all_lob():
     # Get user logic here
     try:
 
-        users=lob_service.get_users()
-        return users
+        lob=lob_service.get_lob()
+        return lob
     
     except Exception as e:
         raise CustomHTTPException(message=e)
 
 
-@lob_router.post("/register")
-async def create_user(
-    username: str = Form(...), 
-    phone: str = Form(...),
-    email = Form(...),
-    password:str = Form(...)
+
+@lob_router.get("/by-user/{user_id}")
+async def  list_lobs_associated_with_user_id(user_id:str):
+    # Get user logic here
+    try:
+        lobs=lob_service.get_lob_by_user_id(user_id)
+        return lobs
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+
+
+@lob_router.post("/")
+async def create_new_store(
+    buisness_name: str = Form(...), 
+    type: str = Form(...), 
+    address: str = Form(...), 
+    postal_code: str = Form(...), 
+    gst_number: str = Form(...), 
+    user_uid: str = Form(...), 
 ):
     try:
-
-        id=lob_service.add_user(username,phone,email,password)
-        nv=getverificationcode()
-        lob_service.save_user_verification_code(user_id=id,verification_code=nv)
-        sendVerificationSME(nv)
-        return {"message": "User created successfully : " +str(id)}
-    
+        lob=lob_service.create_lob(buisness_name,type,address,postal_code,gst_number,user_uid)
+        return {"message": f"Store created successfully for user ID {lob.uid}"}
     except Exception as e:
         raise CustomHTTPException(message=e)
 
 
-@lob_router.get("/{id}/profile")
-async def get_user(id: str):
+
+@lob_router.delete("/{id}")
+async def delete_user(id: str):
+    try:
+        users=lob_service.hard_delete_lob(uid=id)
+        print("after return")
+        return {"message": f"Lob {id} deleted successfully"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+
+@lob_router.get("/{lob_id}")
+async def get_store_details(lob_id: str):
     # Get user logic here
     try:
 
-        user=lob_service.get_user_by_id(uid=id)
+        user=lob_service.get_lob_id(uid=lob_id)
         return user
     
     except Exception as e:
@@ -66,105 +118,41 @@ async def get_user(id: str):
 
 
 #TODO: get rid of id from url instead use jwt token
-@lob_router.put("/password")
-async def change_password(id:str=  Form(...), new_password:str = Form(...)):
+@lob_router.put("/store_name")
+async def update_store_name(lob_uid:str=  Form(...), buisness_name:str = Form(...)):
     try:
-        users=lob_service.update_user_password(user_id=id,password=new_password)
-        return {"message": f"Password updated successfully for user ID {id}"}
+        lob_service.update_lob_buisness_name(lob_uid=lob_uid,buisness_name=buisness_name)
+        return {"message": f"Store Name updated successfully for {lob_uid}"}
     except Exception as e:
         raise CustomHTTPException(message=e)
 
-
-@lob_router.put("/lock")
-async def change_password(id:str=  Form(...), status=Form(...)):
-    try:
-        users=lob_service.lock_user(user_id=id,status=status)
-        return {"message": f"User {id}'s lock status is set to - {status} successfully"}
-    except Exception as e:
-        raise CustomHTTPException(message=e)
-
-@lob_router.put("/username")
-async def change_password(id:str=  Form(...), username=Form(...)):
-    try:
-        users=lob_service.update_username(user_id=id,username=username)
-        return {"message": f"User {id}'s username is set to - {username} successfully"}
-    except Exception as e:
-        raise CustomHTTPException(message=e)
-    
-
-@lob_router.put("/user_type")
-async def change_password(id:str=  Form(...), type=Form(...)):
-    try:
-        users=lob_service.update_user_type(user_id=id,value=type)
-        return {"message": f"User {id}'s user_type is set to - {type} successfully"}
-    except Exception as e:
-        raise CustomHTTPException(message=e)
-    
-    
-
-@lob_router.delete("/{id}")
-async def delete_user(id: str):
-    try:
-        users=lob_service.hard_delete_user(user_id=id)
-        print("after return")
-        return {"message": f"User {id} deleted successfully"}
-    except Exception as e:
-        raise CustomHTTPException(message=e)
-    
 
 #TODO: get rid of id from url instead use jwt token
-@lob_router.post("/verify")
-async def verify_user(id:str=  Form(...), verification_code:str = Form(...)):
-    # Verify user logic here
-    try: 
-        saved_verification_code = lob_service.get_user_verification_code(user_id=id)
-        if saved_verification_code == verification_code:
-            lob_service.is_verified(user_id=id)
-            return {"message": "User verified successfully"}
-        else:
-            raise "verification failed" 
+@lob_router.put("/store_type")
+async def update_store_type(lob_uid:str=  Form(...), type:str = Form(...)):
+    try:
+        lob_service.update_lob_buisness_type(lob_uid=lob_uid,type=type)
+        return {"message": f"Store Type updated successfully for {lob_uid}"}
     except Exception as e:
         raise CustomHTTPException(message=e)
-    
 
 #TODO: get rid of id from url instead use jwt token
-@lob_router.get("/resend-verification/{id}")
-async def resend_verification(id: str):
-    # Verify user logic here
-    try: 
-        nv=getverificationcode()
-        lob_service.save_user_verification_code(user_id=id,verification_code=nv)
-        sendVerificationSME(nv)
-        return {"message": "Verification email sent successfully"}
+@lob_router.put("/store_address")
+async def update_lob_store_address(lob_uid:str=  Form(...), address:str = Form(...), postal_code:str= Form(...)):
+    try:
+        lob_service.update_lob_buisness_address(lob_uid=lob_uid,address=address, postal_code=postal_code)
+        return {"message": f"Store Address updated successfully for {lob_uid}"}
     except Exception as e:
         raise CustomHTTPException(message=e)
-
-#lob_router.include_router(unload_router, prefix="/unloader", tags=["Unloader"])
-#lob_router.include_router(credit_router, prefix="/creditor", tags=["Creditor"])
-#lob_router.include_router(registry_router, prefix="/registry", tags=["Registry"])
     
-'''
-# Additional Endpoints
 
-@lob_router.post("/users/login")
-async def user_login(credentials: UserCredentials):
-    # User login logic here
-    return {"access_token": "jwt_token"}
-
-
-@lob_router.post("/refresh", response_model=Token)
-async def refresh_token(token_refresh: TokenRefresh, authorize: AuthJWT = Depends()):
-    authorize.jwt_refresh_token_required()
-
-    # Access token refresh is valid, generate new access token
-    current_user = authorize.get_jwt_subject()
-    new_access_token = authorize.create_access_token(subject=current_user)
-
-    return {"access_token": new_access_token, "refresh_token": token_refresh.refresh_token}
-
-@lob_router.post("/users/logout")
-async def user_logout():
-    # User logout logic here
-    return {"message": "User logged out successfully"}
-
-'''
+    
+#TODO: get rid of id from url instead use jwt token
+@lob_router.put("/store_gstno")
+async def update_lob_store_gstno(lob_uid:str=  Form(...), gst_number:str = Form(...)):
+    try:
+        lob_service.update_lob_buisness_gst_number(lob_uid=lob_uid,gst_number=gst_number,)
+        return {"message": f"Store gstno updated successfully for {lob_uid}"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
