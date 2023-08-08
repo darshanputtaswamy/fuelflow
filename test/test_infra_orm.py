@@ -1,12 +1,12 @@
 from domain.core.app_users import AppUsers, AppUserVerification
-from domain.fuelflow.lob import LOB,LOBActivities,LOBRoles,LOBRota,LOBUserPrivilege,POS
+from domain.fuelflow.store import Store,StoreActivities,StoreRoles,StoreRota,StoreUserPrivilege,POS
 from domain.core.subscription import Plans,Subscription,SubscriptionPaymentOrder
 
 from domain.fuelflow.registry import Record
 from domain.fuelflow.credit import Vehicles,Orders,OrdersLineItem
 from domain.fuelflow.unloader import FuelUnloadingBook,FuelDipReader
 
-from infrastructure.persistence.orm.models import AppUsersORM,PlansORM,SubscriptionORM,SubscriptionPaymentOrderORM,AppUserVerificationORM,LOBORM,LOBUserPrivilegeORM,POSORM,LOBActivitiesORM,LOBRolesORM,LOBRotaORM,FuelRegistryORM,LOBCreditVehiclesORM,LOBCreditOrdersORM,LOBCreditOrderLineItemsORM,FuelDipReaderORM,FuelUnloadingBookORM
+from infrastructure.persistence.orm.models import AppUsersORM,PlansORM,SubscriptionORM,SubscriptionPaymentOrderORM,AppUserVerificationORM,StoreORM,StoreUserPrivilegeORM,POSORM,StoreActivitiesORM,StoreRolesORM,StoreRotaORM,FuelRegistryORM,StoreCreditVehiclesORM,StoreCreditOrdersORM,StoreCreditOrderLineItemsORM,FuelDipReaderORM,FuelUnloadingBookORM
 from datetime import datetime
 import uuid
 from sqlalchemy import  select
@@ -20,14 +20,14 @@ def test_infra_orm_credit(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
     appuser=AppUsers(uid=str(arr[0]), username="testing", phone="testing description",   email="darshan.px@oracle.com", password="SR",   user_type="TTR",is_locked="TESTING",is_verified="TESTING", created_date=created,is_deleted="TESTING")
-    lob=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",  is_deleted="Y",created_date=created)
+    store=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",  is_deleted="Y",created_date=created)
 
     session.add_all([
-        LOBORM(**lob.dict()),
+        StoreORM(**store.dict()),
         AppUsersORM(**appuser.dict())
         ])
     session.commit()
-    fdr=FuelDipReader(uid=str(arr[2]), lob_uid=str(arr[1]),fuel_tank="testing",dip_number=1.3,liters=2.0)
+    fdr=FuelDipReader(uid=str(arr[2]), store_uid=str(arr[1]),fuel_tank="testing",dip_number=1.3,liters=2.0)
 
     session.add_all([
         FuelDipReaderORM(**fdr.dict()),
@@ -36,7 +36,7 @@ def test_infra_orm_credit(session):
 
 
     fub=FuelUnloadingBook(uid=str(arr[2]),
-                            lob_uid=str(arr[1]),
+                            store_uid=str(arr[1]),
                             unload_date=created,
                             fuel_tank="testing",
                             vehicle_number="KA0200908",
@@ -70,54 +70,54 @@ def test_infra_orm_credit(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
     appuser=AppUsers(uid=str(arr[0]), username="testing", phone="testing description",   email="darshan.px@oracle.com", password="SR",   user_type="TTR",is_locked="TESTING",is_verified="TESTING", created_date=created,is_deleted="TESTING")
-    lob=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="Y",created_date=created)
+    store=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="Y",created_date=created)
 
     session.add_all([
-        LOBORM(**lob.dict()),
+        StoreORM(**store.dict()),
         AppUsersORM(**appuser.dict())
         ])
     session.commit()
 
 
-    lobAdminroles = LOBUserPrivilege( uid=str(arr[3]),
+    storeAdminroles = StoreUserPrivilege( uid=str(arr[3]),
     user_uid=str(arr[0]),
-    lob_uid=str(arr[1]),
+    store_uid=str(arr[1]),
     role="Admin",
     created_date=created,
     updated_date=created)
 
     session.add_all([
-        LOBUserPrivilegeORM(**lobAdminroles.dict()),
+        StoreUserPrivilegeORM(**storeAdminroles.dict()),
         ])
     session.commit()
 
-    privileges=session.query(LOBUserPrivilegeORM).all()
+    privileges=session.query(StoreUserPrivilegeORM).all()
     actual = []
 
     for l in privileges:
-        actual.append(LOBUserPrivilege.from_orm(l))
+        actual.append(StoreUserPrivilege.from_orm(l))
 
-    lobActivity=LOBActivities(uid=str(arr[2]),lob_uid=str(arr[1]),activity_type="testing")
-    lobroles=LOBRoles(uid=str(arr[3]),lob_uid=str(arr[1]),roles="testing")
+    storeActivity=StoreActivities(uid=str(arr[2]),store_uid=str(arr[1]),activity_type="testing")
+    storeroles=StoreRoles(uid=str(arr[3]),store_uid=str(arr[1]),roles="testing")
 
     session.add_all([
-        LOBActivitiesORM(**lobActivity.dict()),
-        LOBRolesORM(**lobroles.dict())
+        StoreActivitiesORM(**storeActivity.dict()),
+        StoreRolesORM(**storeroles.dict())
         ])
     session.commit()
 
-    lobrota=LOBRota(uid=str(arr[4]),lob_uid=str(arr[1]),user_uid= str(arr[0]),from_date=created,till_date=created,role_uid=str(arr[3]),activity_uid=str(arr[2]),approval_status="Approved")
+    storerota=StoreRota(uid=str(arr[4]),store_uid=str(arr[1]),user_uid= str(arr[0]),from_date=created,till_date=created,role_uid=str(arr[3]),activity_uid=str(arr[2]),approval_status="Approved")
 
 
     session.add_all([
-        LOBRotaORM(**lobrota.dict()),
+        StoreRotaORM(**storerota.dict()),
         ])
     session.commit()
 
 
     pos=POS(
         uid=str(arr[5]),
-        lob_uid=str(arr[1]),
+        store_uid=str(arr[1]),
         pos_name="testing",
         pos_type="testing",
         pos_contact_uid=str(arr[0]),
@@ -129,10 +129,10 @@ def test_infra_orm_credit(session):
     session.commit()
 
 
-    rota=session.query(LOBRotaORM).all()
+    rota=session.query(StoreRotaORM).all()
     fuelRegistryRecord=Record(
                         uid=str(arr[6]),
-                        lob_uid=str(arr[1]),
+                        store_uid=str(arr[1]),
                         pos_uid= str(arr[5]),
                         rota_uid=str(arr[4]),
                         status='Approved',
@@ -156,15 +156,15 @@ def test_infra_orm_credit(session):
     ])
     session.commit()
 
-    v=Vehicles(uid=str(arr[7]),lob_uid=str(arr[1]),user_uid= str(arr[0]),vehicle_num="KA02-0908",status="Approved")
+    v=Vehicles(uid=str(arr[7]),store_uid=str(arr[1]),user_uid= str(arr[0]),vehicle_num="KA02-0908",status="Approved")
 
     session.add_all([
-         LOBCreditVehiclesORM(**v.dict())
+         StoreCreditVehiclesORM(**v.dict())
     ])
     session.commit()
 
     o=Orders(uid=str(arr[8]),
-    lob_uid=str(arr[1]),
+    store_uid=str(arr[1]),
     pos_uid=str(arr[5]),
     rota_uid=str(arr[4]),
     user_uid= str(arr[0]),
@@ -173,7 +173,7 @@ def test_infra_orm_credit(session):
     created_date=created)
 
     session.add_all([
-         LOBCreditOrdersORM(**o.dict())
+         StoreCreditOrdersORM(**o.dict())
     ])
     session.commit()
 
@@ -187,13 +187,13 @@ def test_infra_orm_credit(session):
     )
 
     session.add_all([
-         LOBCreditOrderLineItemsORM(**ol.dict())
+         StoreCreditOrderLineItemsORM(**ol.dict())
     ])
     session.commit()
 
 
 
-    records=session.query(LOBCreditOrderLineItemsORM).all()
+    records=session.query(StoreCreditOrderLineItemsORM).all()
     actual = []
     for l in records:
         actual.append(OrdersLineItem.from_orm(l))
@@ -205,54 +205,54 @@ def test_infra_orm_fuelRegistry(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
     appuser=AppUsers(uid=str(arr[0]), username="testing", phone="testing description",   email="darshan.px@oracle.com", password="SR",   user_type="TTR",is_locked="TESTING",is_verified="TESTING", created_date=created,is_deleted="TESTING")
-    lob=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="Y",created_date=created)
+    store=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="Y",created_date=created)
 
     session.add_all([
-        LOBORM(**lob.dict()),
+        StoreORM(**store.dict()),
         AppUsersORM(**appuser.dict())
         ])
     session.commit()
 
 
-    lobAdminroles = LOBUserPrivilege( uid=str(arr[3]),
+    storeAdminroles = StoreUserPrivilege( uid=str(arr[3]),
     user_uid=str(arr[0]),
-    lob_uid=str(arr[1]),
+    store_uid=str(arr[1]),
     role="Admin",
     created_date=created,
     updated_date=created)
 
     session.add_all([
-        LOBUserPrivilegeORM(**lobAdminroles.dict()),
+        StoreUserPrivilegeORM(**storeAdminroles.dict()),
         ])
     session.commit()
 
-    privileges=session.query(LOBUserPrivilegeORM).all()
+    privileges=session.query(StoreUserPrivilegeORM).all()
     actual = []
 
     for l in privileges:
-        actual.append(LOBUserPrivilege.from_orm(l))
+        actual.append(StoreUserPrivilege.from_orm(l))
 
-    lobActivity=LOBActivities(uid=str(arr[2]),lob_uid=str(arr[1]),activity_type="testing")
-    lobroles=LOBRoles(uid=str(arr[3]),lob_uid=str(arr[1]),roles="testing")
+    storeActivity=StoreActivities(uid=str(arr[2]),store_uid=str(arr[1]),activity_type="testing")
+    storeroles=StoreRoles(uid=str(arr[3]),store_uid=str(arr[1]),roles="testing")
 
     session.add_all([
-        LOBActivitiesORM(**lobActivity.dict()),
-        LOBRolesORM(**lobroles.dict())
+        StoreActivitiesORM(**storeActivity.dict()),
+        StoreRolesORM(**storeroles.dict())
         ])
     session.commit()
 
-    lobrota=LOBRota(uid=str(arr[4]),lob_uid=str(arr[1]),user_uid= str(arr[0]),from_date=created,till_date=created,role_uid=str(arr[3]),activity_uid=str(arr[2]),approval_status="Approved")
+    storerota=StoreRota(uid=str(arr[4]),store_uid=str(arr[1]),user_uid= str(arr[0]),from_date=created,till_date=created,role_uid=str(arr[3]),activity_uid=str(arr[2]),approval_status="Approved")
 
 
     session.add_all([
-        LOBRotaORM(**lobrota.dict()),
+        StoreRotaORM(**storerota.dict()),
         ])
     session.commit()
 
 
     pos=POS(
         uid=str(arr[5]),
-        lob_uid=str(arr[1]),
+        store_uid=str(arr[1]),
         pos_name="testing",
         pos_type="testing",
         pos_contact_uid=str(arr[0]),
@@ -264,10 +264,10 @@ def test_infra_orm_fuelRegistry(session):
     session.commit()
 
 
-    rota=session.query(LOBRotaORM).all()
+    rota=session.query(StoreRotaORM).all()
     fuelRegistryRecord=Record(
                         uid=str(arr[6]),
-                        lob_uid=str(arr[1]),
+                        store_uid=str(arr[1]),
                         pos_uid= str(arr[5]),
                         rota_uid=str(arr[4]),
                         status='Approved',
@@ -303,10 +303,10 @@ def test_infra_orm_subscription(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
     appuser=AppUsers(uid=str(arr[0]), username="testing", phone="testing description",   email="darshan.px@oracle.com", password="SR",   user_type="TTR",is_locked="TESTING",is_verified="TESTING", created_date=created,is_deleted="TESTING")
-    lob=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",is_deleted="Y",created_date=created)
+    store=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",is_deleted="Y",created_date=created)
 
     session.add_all([
-    LOBORM(**lob.dict()),
+    StoreORM(**store.dict()),
     AppUsersORM(**appuser.dict())
     ])
     session.commit()
@@ -337,7 +337,7 @@ def test_infra_orm_subscription(session):
     ])
     session.commit()
     suborder=Subscription(uid=str(arr[4]),
-                                lob_uid=str(arr[1]),
+                                store_uid=str(arr[1]),
                                 initiated_user_uid=str(arr[0]),
                                 plan_id=str(arr[2]),
                                 status='testing',
@@ -356,20 +356,20 @@ def test_infra_orm_subscription(session):
 
 
 
-def test_infra_orm_lob_pos(session):
+def test_infra_orm_store_pos(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
     appuser=AppUsers(uid=str(arr[0]), username="testing", phone="testing description",   email="darshan.px@oracle.com", password="SR",   user_type="TTR",is_locked="TESTING",is_verified="TESTING", created_date=created,is_deleted="TESTING")
-    lob=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="Y",created_date=created)
+    store=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="Y",created_date=created)
 
     session.add_all([
-    LOBORM(**lob.dict()),
+    StoreORM(**store.dict()),
     AppUsersORM(**appuser.dict())
     ])
     session.commit()
 
     pos=POS(uid=str(arr[2]),
-        lob_uid=str(arr[1]),
+        store_uid=str(arr[1]),
         pos_name="testing",
         pos_type="testing",
         pos_contact_uid=str(arr[0]),
@@ -388,71 +388,71 @@ def test_infra_orm_lob_pos(session):
     assert [pos] == actual
 
 
-def test_infra_orm_lob_rota(session):
+def test_infra_orm_store_rota(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
     appuser=AppUsers(uid=str(arr[0]), username="testing", phone="testing description",   email="darshan.px@oracle.com", password="SR",   user_type="TTR",is_locked="TESTING",is_verified="TESTING", created_date=created,is_deleted="TESTING")
-    lob=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="Y",created_date=created)
+    store=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="Y",created_date=created)
 
     session.add_all([
-        LOBORM(**lob.dict()),
+        StoreORM(**store.dict()),
         AppUsersORM(**appuser.dict())
         ])
     session.commit()
 
 
-    lobAdminroles = LOBUserPrivilege( uid=str(arr[3]),
+    storeAdminroles = StoreUserPrivilege( uid=str(arr[3]),
     user_uid=str(arr[0]),
-    lob_uid=str(arr[1]),
+    store_uid=str(arr[1]),
     role="Admin",
     created_date=created,
     updated_date=created)
 
     session.add_all([
-        LOBUserPrivilegeORM(**lobAdminroles.dict()),
+        StoreUserPrivilegeORM(**storeAdminroles.dict()),
         ])
     session.commit()
 
-    privileges=session.query(LOBUserPrivilegeORM).all()
+    privileges=session.query(StoreUserPrivilegeORM).all()
     actual = []
 
     for l in privileges:
-        actual.append(LOBUserPrivilege.from_orm(l))
-    assert [lobAdminroles] == actual
+        actual.append(StoreUserPrivilege.from_orm(l))
+    assert [storeAdminroles] == actual
 
-    lobActivity=LOBActivities(uid=str(arr[2]),lob_uid=str(arr[1]),activity_type="testing")
-    lobroles=LOBRoles(uid=str(arr[3]),lob_uid=str(arr[1]),roles="testing")
+    storeActivity=StoreActivities(uid=str(arr[2]),store_uid=str(arr[1]),activity_type="testing")
+    storeroles=StoreRoles(uid=str(arr[3]),store_uid=str(arr[1]),roles="testing")
 
     session.add_all([
-        LOBActivitiesORM(**lobActivity.dict()),
-        LOBRolesORM(**lobroles.dict())
+        StoreActivitiesORM(**storeActivity.dict()),
+        StoreRolesORM(**storeroles.dict())
         ])
     session.commit()
 
-    lobrota=LOBRota(uid=str(arr[4]),lob_uid=str(arr[1]),user_uid= str(arr[0]),from_date=created,till_date=created,role_uid=str(arr[3]),activity_uid=str(arr[2]),approval_status="Approved")
+    storerota=StoreRota(uid=str(arr[4]),store_uid=str(arr[1]),user_uid= str(arr[0]),from_date=created,till_date=created,role_uid=str(arr[3]),activity_uid=str(arr[2]),approval_status="Approved")
 
 
     session.add_all([
-        LOBRotaORM(**lobrota.dict()),
+        StoreRotaORM(**storerota.dict()),
         ])
     session.commit()
 
-    rota=session.query(LOBRotaORM).all()
+    rota=session.query(StoreRotaORM).all()
 
     print(rota)
     actual = []
 
     for l in rota:
-        actual.append(LOBRota.from_orm(l))
+        actual.append(StoreRota.from_orm(l))
     
-    assert [lobrota] == actual
+    assert [storerota] == actual
 
 
 
-def test_infra_orm_lob_creation(session):
+def test_infra_orm_store_creation(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
-    lob=LOB(uid=str(arr[0]),
+    store=Store(uid=str(arr[0]),
             buisness_name="testing",
             type="testing",
             address="testing",
@@ -462,17 +462,17 @@ def test_infra_orm_lob_creation(session):
             created_date=created)
     
     session.add_all([
-        LOBORM(**lob.dict())
+        StoreORM(**store.dict())
         ])
     
     session.commit()
-    lobs=session.query(LOBORM).all()
+    stores=session.query(StoreORM).all()
     actual = []
 
-    for l in lobs:
-        actual.append(LOB.from_orm(l))
+    for l in stores:
+        actual.append(Store.from_orm(l))
     
-    assert [lob] == actual
+    assert [store] == actual
 
 
 def  test_infra_orm_appuser_creation(session):

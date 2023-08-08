@@ -84,19 +84,19 @@ async def get_plan_details(id:str):
     
 
 @subscription_router.post("/subscribe")
-async def subscribe(lob_uid:str,initiated_user_uid:str,plan_id:str):
+async def subscribe(store_uid:str,initiated_user_uid:str,plan_id:str):
     try:
        
-       plan=subscription_service.create_subscription(lob_uid,initiated_user_uid,plan_id)
+       plan=subscription_service.create_subscription(store_uid,initiated_user_uid,plan_id)
        return plan
     except Exception as e:
         raise CustomHTTPException(message=e)
 
 
-@subscription_router.get("/{lob_uid}")
-async def get_subscription_for_lob(lob_uid:str, status: Optional[Literal["PENDING", "ACTIVE","EXPIRED", "NEEDS_RENEWAL"]] = None):
+@subscription_router.get("/{store_uid}")
+async def get_subscription_for_store(store_uid:str, status: Optional[Literal["PENDING", "ACTIVE","EXPIRED", "NEEDS_RENEWAL"]] = None):
     try:
-       sub=subscription_service.get_subscription(lob_uid,status)
+       sub=subscription_service.get_subscription(store_uid,status)
        return sub
     except Exception as e:
         raise CustomHTTPException(message=e)
@@ -110,10 +110,10 @@ async def get_subscription(status: Optional[Literal["PENDING", "ACTIVE","EXPIRED
     except Exception as e:
         raise CustomHTTPException(message=e)
     
-@subscription_router.delete("/{lob_uid}/{subscription_uid}")
-async def delete_pending_subscription(lob_uid:str, subscription_uid: str):
+@subscription_router.delete("/{store_uid}/{subscription_uid}")
+async def delete_pending_subscription(store_uid:str, subscription_uid: str):
     try:
-       sub=subscription_service.delete_pending_subscription(lob_uid,subscription_uid)
+       sub=subscription_service.delete_pending_subscription(store_uid,subscription_uid)
        return sub
     except Exception as e:
         raise CustomHTTPException(message=e)

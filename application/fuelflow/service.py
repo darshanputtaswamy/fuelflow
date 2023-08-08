@@ -1,5 +1,5 @@
 from domain.core.subscription import Plans,Subscription,SubscriptionPaymentOrder, SubscriptionStatus,PlanType
-from domain.fuelflow.lob import LOB,LOBActivities,LOBRoles,LOBUserPrivilege
+from domain.fuelflow.store import Store,StoreActivities,StoreRoles,StoreUserPrivilege
 import uuid
 import datetime
 from .custom.privileges_service import PrivilegeService
@@ -9,97 +9,97 @@ class FuelFlowService(PrivilegeService):
         self.uow=uow
         super().__init__(uow)
 
-    def create_lob(self,buisness_name,type,address,postal_code,gst_number,user_uid):
+    def create_store(self,buisness_name,type,address,postal_code,gst_number,user_uid):
         with self.uow:
             created=datetime.datetime.now()            
-            lob_id=uuid.uuid4()
+            store_id=uuid.uuid4()
             user = self.uow.user.get(id=user_uid)
             if not user:
                     raise Exception("User "+str(user_uid)+" not found")
-            lob=LOB(uid=str(lob_id),buisness_name=buisness_name,type=type,address=address,postal_code=postal_code, gst_number=gst_number, is_deleted='N', created_date=created)
-            self.uow.lob.add(lob)
+            store=Store(uid=str(store_id),buisness_name=buisness_name,type=type,address=address,postal_code=postal_code, gst_number=gst_number, is_deleted='N', created_date=created)
+            self.uow.store.add(store)
             self.uow.commit()
-            self.create_privilege_record(user_uid=user_uid,lob_uid=lob_id,role='OWNER')
-            return lob
+            self.create_privilege_record(user_uid=user_uid,store_uid=store_id,role='OWNER')
+            return store
         
-    def update_lob_buisness_name(self,lob_uid,buisness_name):
+    def update_store_buisness_name(self,store_uid,buisness_name):
         with self.uow:
             updated=datetime.datetime.now() 
-            lob = self.uow.lob.get(id=lob_uid) 
-            if not lob:
-                raise Exception("lob "+lob_uid+" not found")
-            lob.buisness_name=buisness_name
-            lob.updated_date=updated
-            self.uow.lob.update(lob)
+            store = self.uow.store.get(id=store_uid) 
+            if not store:
+                raise Exception("store "+store_uid+" not found")
+            store.buisness_name=buisness_name
+            store.updated_date=updated
+            self.uow.store.update(store)
             self.uow.commit()
 
-    def update_lob_buisness_type(self,lob_uid,type):
+    def update_store_buisness_type(self,store_uid,type):
         with self.uow:
             updated=datetime.datetime.now() 
-            lob = self.uow.lob.get(id=lob_uid) 
-            if not lob:
-                raise Exception("lob "+lob_uid+" not found")
-            lob.type=type
-            lob.updated_date=updated
-            self.uow.lob.update(lob)
+            store = self.uow.store.get(id=store_uid) 
+            if not store:
+                raise Exception("store "+store_uid+" not found")
+            store.type=type
+            store.updated_date=updated
+            self.uow.store.update(store)
             self.uow.commit()
         
-    def update_lob_buisness_address(self,lob_uid,address,postal_code):
+    def update_store_buisness_address(self,store_uid,address,postal_code):
         with self.uow:
             updated=datetime.datetime.now() 
-            lob = self.uow.lob.get(id=lob_uid) 
-            if not lob:
-                raise Exception("lob "+lob_uid+" not found")
-            lob.address=address
-            lob.postal_code=postal_code
-            lob.updated_date=updated
-            self.uow.lob.update(lob)
+            store = self.uow.store.get(id=store_uid) 
+            if not store:
+                raise Exception("store "+store_uid+" not found")
+            store.address=address
+            store.postal_code=postal_code
+            store.updated_date=updated
+            self.uow.store.update(store)
             self.uow.commit()
 
-    def update_lob_buisness_gst_number(self,lob_uid,gst_number):
+    def update_store_buisness_gst_number(self,store_uid,gst_number):
         with self.uow:
             updated=datetime.datetime.now()  
-            lob = self.uow.lob.get(id=lob_uid) 
-            if not lob:
-                raise Exception("lob "+lob_uid+" not found")
-            lob.gst_number=gst_number
-            lob.updated_date=updated
-            self.uow.lob.update(lob)
+            store = self.uow.store.get(id=store_uid) 
+            if not store:
+                raise Exception("store "+store_uid+" not found")
+            store.gst_number=gst_number
+            store.updated_date=updated
+            self.uow.store.update(store)
             self.uow.commit()
 
-    def delete_lob(self,uid):
+    def delete_store(self,uid):
         with self.uow:
             updated=datetime.datetime.now()  
-            lob = self.uow.lob.get(id=uid) 
-            if not lob:
+            store = self.uow.store.get(id=uid) 
+            if not store:
                 raise Exception("Lob "+uid+" not found")
-            lob.deleted='Y'
-            lob.updated_date=updated
-            self.uow.lob.update(lob)
+            store.deleted='Y'
+            store.updated_date=updated
+            self.uow.store.update(store)
             self.uow.commit()
 
 
-    def hard_delete_lob(self,uid):
+    def hard_delete_store(self,uid):
         with self.uow:
-            lob = self.uow.lob.get(id=uid) 
-            if not lob:
-                raise Exception("lob "+id+" not found")
-            self.uow.lob.delete(uid)
+            store = self.uow.store.get(id=uid) 
+            if not store:
+                raise Exception("store "+id+" not found")
+            self.uow.store.delete(uid)
             self.uow.commit()
 
-    def get_lob_id(self,uid):
+    def get_store_id(self,uid):
         with self.uow:
-            lob = self.uow.lob.get(id=uid) 
-            if not lob:
-                raise Exception("lob "+uid+" not found")
-            return lob
+            store = self.uow.store.get(id=uid) 
+            if not store:
+                raise Exception("store "+uid+" not found")
+            return store
 
-    def get_lob(self):
+    def get_store(self):
         with self.uow:
-            lob = self.uow.lob.list()
-            return lob
+            store = self.uow.store.list()
+            return store
     
-    def get_lob_by_user_id(self,user_id):
+    def get_store_by_user_id(self,user_id):
         with self.uow:
             user = self.uow.user.get(user_id)
             if not user:
@@ -107,7 +107,7 @@ class FuelFlowService(PrivilegeService):
             records = self.get_privilege_record_by_user(user_id)
             res=[]
             for record in records:
-                res.append( self.uow.lob.get(record.lob_uid))
+                res.append( self.uow.store.get(record['store_uid']))
             return res
 
     

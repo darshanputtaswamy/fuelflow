@@ -95,7 +95,7 @@ class SubscriptionSQLAlchemyRepository(AbstractRepository):
         tdict=user.dict()
         tdict['uid']=str(tdict['uid'])
         sub_in_orm=self.session.get(SubscriptionORM,tdict['uid'])
-        sub_in_orm.lob_uid = str(tdict['lob_uid'])
+        sub_in_orm.store_uid = str(tdict['store_uid'])
         sub_in_orm.initiated_user_uid = str(tdict['initiated_user_uid'])
         sub_in_orm.plan_id =str(tdict['plan_id'])
         sub_in_orm.plan_start_date = tdict['plan_start_date']

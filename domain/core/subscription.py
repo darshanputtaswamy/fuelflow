@@ -6,7 +6,7 @@ import json
 from enum import Enum
 from datetime import datetime
 from domain.core.app_users import AppUsers
-from domain.fuelflow.lob import LOB
+from domain.fuelflow.store import Store
 
 class PlanType(str):
     free = "free"
@@ -46,7 +46,7 @@ class Plans(BaseModel):
 
 class Subscription(BaseModel):
     uid: uuid.UUID
-    lob_uid:uuid.UUID
+    store_uid:uuid.UUID
     initiated_user_uid:uuid.UUID
     plan_id:uuid.UUID
     plan_start_date:Optional[datetime]

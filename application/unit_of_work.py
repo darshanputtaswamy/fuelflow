@@ -4,12 +4,12 @@ import abc
 from sqlalchemy import create_engine
 
 from infrastructure.repository.core.app_users_sa_repo import AppUsersSQLAlchemyRepository
-from infrastructure.repository.fuelflow.lob_sa_repo import LOBSQLAlchemyRepository
-from infrastructure.repository.fuelflow.lob_sa_repo import LOBActivitiesSQLAlchemyRepository
-from infrastructure.repository.fuelflow.lob_sa_repo import LOBRolesSQLAlchemyRepository
-from infrastructure.repository.fuelflow.lob_sa_repo import LOBUserPrivilegeSQLAlchemyRepository
-from infrastructure.repository.fuelflow.lob_sa_repo import LOBRotaSQLAlchemyRepository
-from infrastructure.repository.fuelflow.lob_sa_repo import POSSQLAlchemyRepository
+from infrastructure.repository.fuelflow.store_sa_repo import StoreSQLAlchemyRepository
+from infrastructure.repository.fuelflow.store_sa_repo import StoreActivitiesSQLAlchemyRepository
+from infrastructure.repository.fuelflow.store_sa_repo import StoreRolesSQLAlchemyRepository
+from infrastructure.repository.fuelflow.store_sa_repo import StoreUserPrivilegeSQLAlchemyRepository
+from infrastructure.repository.fuelflow.store_sa_repo import StoreRotaSQLAlchemyRepository
+from infrastructure.repository.fuelflow.store_sa_repo import POSSQLAlchemyRepository
 from infrastructure.repository.core.subscription_sa_repo import PlansSQLAlchemyRepository
 from infrastructure.repository.core.subscription_sa_repo import SubscriptionSQLAlchemyRepository
 from infrastructure.repository.core.subscription_sa_repo import SubscriptionPaymentOrderSQLAlchemyRepository
@@ -23,16 +23,16 @@ from infrastructure.repository.base import AbstractRepository
 
 class AbstractUnitOfWork(abc.ABC):
     user: AbstractRepository
-    lob: AbstractRepository
-    lob_activities: AbstractRepository
-    lob_roles: AbstractRepository
-    lob_user_privileges: AbstractRepository
-    lob_rota: AbstractRepository
-    lob_pos: AbstractRepository
-    lob_vehiceles: AbstractRepository
-    lob_credit_order: AbstractRepository
-    lob_credit_orderlineItems: AbstractRepository
-    lob_registry: AbstractRepository
+    store: AbstractRepository
+    store_activities: AbstractRepository
+    store_roles: AbstractRepository
+    store_user_privileges: AbstractRepository
+    store_rota: AbstractRepository
+    store_pos: AbstractRepository
+    store_vehiceles: AbstractRepository
+    store_credit_order: AbstractRepository
+    store_credit_orderlineItems: AbstractRepository
+    store_registry: AbstractRepository
     fueldip_reader: AbstractRepository
     fuel_unloader: AbstractRepository
     plans: AbstractRepository
@@ -62,16 +62,16 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         self.comments = None
         self.permissions = None
         self.user: None
-        self.lob: None
-        self.lob_activities: None
-        self.lob_roles: None
-        self.lob_user_privileges: None
-        self.lob_rota: None
-        self.lob_pos: None
-        self.lob_vehiceles: None
-        self.lob_credit_order: None
-        self.lob_credit_orderlineItems: None
-        self.lob_registry: None
+        self.store: None
+        self.store_activities: None
+        self.store_roles: None
+        self.store_user_privileges: None
+        self.store_rota: None
+        self.store_pos: None
+        self.store_vehiceles: None
+        self.store_credit_order: None
+        self.store_credit_orderlineItems: None
+        self.store_registry: None
         self.fueldip_reader: None
         self.fuel_unloader: None
         self.plans: None
@@ -81,16 +81,16 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
     def __enter__(self):
         self.session = self.session_factory.create_session()  
         self.user= AppUsersSQLAlchemyRepository(self.session)
-        self.lob= LOBSQLAlchemyRepository(self.session)
-        self.lob_activities= LOBActivitiesSQLAlchemyRepository(self.session)
-        self.lob_roles= LOBRolesSQLAlchemyRepository(self.session)
-        self.lob_user_privileges= LOBUserPrivilegeSQLAlchemyRepository(self.session)
-        self.lob_rota= LOBRotaSQLAlchemyRepository(self.session)
-        self.lob_pos= POSSQLAlchemyRepository(self.session)
-        self.lob_vehiceles= VechiclesSQLAlchemyRepository(self.session)
-        self.lob_credit_order= OrderSQLAlchemyRepository(self.session)
-        self.lob_credit_orderlineItems= OrderLineItemSQLAlchemyRepository(self.session)
-        self.lob_registry= FuelRegistrySQLAlchemyRepository(self.session)
+        self.store= StoreSQLAlchemyRepository(self.session)
+        self.store_activities= StoreActivitiesSQLAlchemyRepository(self.session)
+        self.store_roles= StoreRolesSQLAlchemyRepository(self.session)
+        self.store_user_privileges= StoreUserPrivilegeSQLAlchemyRepository(self.session)
+        self.store_rota= StoreRotaSQLAlchemyRepository(self.session)
+        self.store_pos= POSSQLAlchemyRepository(self.session)
+        self.store_vehiceles= VechiclesSQLAlchemyRepository(self.session)
+        self.store_credit_order= OrderSQLAlchemyRepository(self.session)
+        self.store_credit_orderlineItems= OrderLineItemSQLAlchemyRepository(self.session)
+        self.store_registry= FuelRegistrySQLAlchemyRepository(self.session)
         self.fueldip_reader= FuelDipReaderSQLAlchemyRepository(self.session)
         self.fuel_unloader= UnloaderSQLAlchemyRepository(self.session)
         self.plans= PlansSQLAlchemyRepository(self.session)

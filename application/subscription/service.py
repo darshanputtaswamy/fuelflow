@@ -56,15 +56,15 @@ class SubscriptionService:
                 raise Exception("plans not found")
         return plans
     
-    def check_subscription_renewal_eligibility(self,lob_uid):
+    def check_subscription_renewal_eligibility(self,store_uid):
         # no subscription in status pending 
         # current subscription plan is close to it's end date 
         created=datetime.datetime.now()
-        pending_sub = self.uow.subscription.getByReference(lob_id=lob_uid, status='Pending') 
+        pending_sub = self.uow.subscription.getByReference(store_id=store_uid, status='Pending') 
         if len(pending_sub) >= 1:
             return False
 
-        active_sub = self.uow.subscription.getByReference(lob_id=lob_uid,  status='Active') 
+        active_sub = self.uow.subscription.getByReference(store_id=store_uid,  status='Active') 
 
         if len(pending_sub) == 0 and len(active_sub) == 1:
             plan=self.uow.plans.get(id=active_sub[0].plan_id) 
@@ -75,7 +75,7 @@ class SubscriptionService:
 
         return False
 
-    def create_subscription(self,lob_uid,initiated_user_uid,plan_id):
+    def create_subscription(self,store_uid,initiated_user_uid,plan_id):
 
         with self.uow:
             created=datetime.datetime.now()            
@@ -87,14 +87,14 @@ class SubscriptionService:
             user= self.uow.user.get(id=initiated_user_uid) 
             if  not user:
                 raise Exception("User not found")
-            lob= self.uow.lob.get(id=lob_uid) 
-            if  not lob:
+            store= self.uow.store.get(id=store_uid) 
+            if  not store:
                 raise Exception("Store not found")
             if plans.name == 'FREE':
                 status='ACTIVE'
-            if (self.check_subscription_renewal_eligibility(lob_uid)):
+            if (self.check_subscription_renewal_eligibility(store_uid)):
                 sub=Subscription(   uid=str(id),
-                                    lob_uid=lob_uid,
+                                    store_uid=store_uid,
                                     initiated_user_uid=initiated_user_uid,
                                     plan_id=plan_id,
                                     status=status, 
@@ -107,21 +107,21 @@ class SubscriptionService:
         return self.uow.subscription.get(id=subscription_uid)
     
 
-    def delete_pending_subscription(self,lob_uid,subscription_uid):
+    def delete_pending_subscription(self,store_uid,subscription_uid):
         with self.uow:
-            sub = self.uow.subscription.getByReference(lob_uid=lob_uid, uid=subscription_uid, status="PENDING") 
+            sub = self.uow.subscription.getByReference(store_uid=store_uid, uid=subscription_uid, status="PENDING") 
             if len(sub)==0:
                 raise Exception(subscription_uid+" not found")
             self.uow.subscription.delete(sub.uid)
             self.uow.commit()
         return
     
-    def get_subscription(self,lob_uid,status):
-        if lob_uid:
+    def get_subscription(self,store_uid,status):
+        if store_uid:
             if not status:
-                return self.uow.subscription.getByReference(lob_id=lob_uid) 
+                return self.uow.subscription.getByReference(store_id=store_uid) 
             else:
-                return self.uow.subscription.getByReference(lob_id=lob_uid, status=status.upper()) 
+                return self.uow.subscription.getByReference(store_id=store_uid, status=status.upper()) 
         else:
             if not status:
                 return self.uow.subscription.list() 

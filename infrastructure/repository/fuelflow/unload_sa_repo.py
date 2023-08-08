@@ -42,7 +42,7 @@ class FuelDipReaderSQLAlchemyRepository(AbstractRepository):
         tdict=user.dict()
         tdict['uid']=str(tdict['uid'])
         v_in_orm=self.session.get(FuelDipReaderORM,tdict['uid'])
-        v_in_orm.lob_uid=str(tdict['lob_uid'])
+        v_in_orm.store_uid=str(tdict['store_uid'])
         v_in_orm.fuel_tank=str(tdict['fuel_tank'])
         v_in_orm.dip_number=tdict['dip_number']
         v_in_orm.liters=tdict['liters']
@@ -88,7 +88,7 @@ class UnloaderSQLAlchemyRepository(AbstractRepository):
         tdict=user.dict()
         tdict['uid']=str(tdict['uid'])
         o_in_orm=self.session.get(FuelUnloadingBookORM,tdict['uid'])
-        o_in_orm.lob_uid=str(tdict['lob_uid'])
+        o_in_orm.store_uid=str(tdict['store_uid'])
         o_in_orm.unload_date=tdict['unload_date']
         o_in_orm.fuel_tank=tdict['fuel_tank']
         o_in_orm.vehicle_number=tdict['vehicle_number']

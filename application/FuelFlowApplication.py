@@ -1,5 +1,5 @@
 from warnings import catch_warnings
-#from application.lob.lob_service import LobService
+#from application.store.store_service import LobService
 #from application.subscription.subscription_service import SubscriptionService
 from application.user.service import UserService
 import datetime

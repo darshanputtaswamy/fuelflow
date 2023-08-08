@@ -8,7 +8,7 @@ from datetime import datetime
 from domain.core.app_users import AppUsers
 
 
-class LOB(BaseModel):
+class Store(BaseModel):
     uid: uuid.UUID
     buisness_name: str
     type: str
@@ -27,10 +27,10 @@ class LOB(BaseModel):
     def __eq__(self,other):
         return self.uid == other.uid
     
-class LOBUserPrivilege(BaseModel):
+class StoreUserPrivilege(BaseModel):
     uid: uuid.UUID
     user_uid:uuid.UUID
-    lob_uid:uuid.UUID
+    store_uid:uuid.UUID
     role:str
     created_date:datetime
     updated_date:Optional[datetime]
@@ -45,9 +45,9 @@ class LOBUserPrivilege(BaseModel):
         return self.uid == other.uid
 
 
-class LOBActivities(BaseModel):
+class StoreActivities(BaseModel):
     uid: uuid.UUID
-    lob_uid:uuid.UUID
+    store_uid:uuid.UUID
     activity_type:str
     class Config:
             orm_mode = True
@@ -59,9 +59,9 @@ class LOBActivities(BaseModel):
         return self.uid == other.uid
     
 
-class LOBRoles(BaseModel):
+class StoreRoles(BaseModel):
     uid: uuid.UUID
-    lob_uid:uuid.UUID
+    store_uid:uuid.UUID
     roles:str
     class Config:
             orm_mode = True
@@ -74,9 +74,9 @@ class LOBRoles(BaseModel):
     
 
 
-class LOBRota(BaseModel):
+class StoreRota(BaseModel):
     uid: uuid.UUID
-    lob_uid:uuid.UUID
+    store_uid:uuid.UUID
     user_uid:uuid.UUID
     from_date: datetime
     till_date: datetime
@@ -96,7 +96,7 @@ class LOBRota(BaseModel):
 
 class POS(BaseModel):
     uid: uuid.UUID
-    lob_uid:uuid.UUID
+    store_uid:uuid.UUID
     pos_name:str
     pos_type: str
     pos_contact_uid: uuid.UUID

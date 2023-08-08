@@ -42,7 +42,7 @@ class FuelRegistrySQLAlchemyRepository(AbstractRepository):
         tdict=user.dict()
         tdict['uid']=str(tdict['uid'])
         v_in_orm=self.session.get(FuelRegistryORM,tdict['uid'])
-        v_in_orm.lob_uid=str(tdict['lob_uid'])
+        v_in_orm.store_uid=str(tdict['store_uid'])
         v_in_orm.pos_uid=str(tdict['pos_uid'])
         v_in_orm.rota_uid=str(tdict['rota_uid'])
         v_in_orm.previous_uid=str(tdict['previous_uid'])

@@ -6,12 +6,12 @@ import json
 from enum import Enum
 from datetime import datetime
 from domain.core.app_users import AppUsers
-from domain.fuelflow.lob import LOB
+from domain.fuelflow.store import Store
 
 
 class Vehicles(BaseModel):
     uid: uuid.UUID
-    lob_uid:uuid.UUID
+    store_uid:uuid.UUID
     user_uid: uuid.UUID
     vehicle_num:str
     status: str
@@ -29,7 +29,7 @@ class Vehicles(BaseModel):
 
 class Orders(BaseModel):
     uid: uuid.UUID
-    lob_uid:uuid.UUID
+    store_uid:uuid.UUID
     pos_uid: uuid.UUID
     rota_uid: uuid.UUID
     user_uid:str

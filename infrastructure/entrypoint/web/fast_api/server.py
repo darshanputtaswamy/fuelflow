@@ -12,7 +12,7 @@ import os
 import pandas as pd
 from .router.user_router import user_router
 from .router.subscription_router import subscription_router
-from .router.lob_router import lob_router
+from .router.store_router import store_router
 from .exception import CustomHTTPException
 
 app = FastAPI()
@@ -47,7 +47,7 @@ async def custom_exception_handler(request: Request, exc: CustomHTTPException):
 
 app.include_router(user_router, prefix="/user", tags=["User"])
 app.include_router(subscription_router, prefix="/subscription", tags=["Subscription"])
-app.include_router(lob_router, prefix="/store", tags=["Store"])
+app.include_router(store_router, prefix="/store", tags=["Store"])
 
 
 '''

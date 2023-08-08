@@ -7,8 +7,8 @@ from fastapi.responses import JSONResponse
 from infrastructure.entrypoint.web.fast_api.exception import CustomHTTPException
 
 sqlaclk_uow= SqlAlchemyUnitOfWork(DatabaseSessionFactory)
-credit_router = APIRouter()
-lob_service=FuelFlowService(sqlaclk_uow)
+registry_router = APIRouter()
+store_service=FuelFlowService(sqlaclk_uow)
 
 def getverificationcode():
     return "newverificationcode"
@@ -18,19 +18,19 @@ def sendVerificationSME(code):
 
 
 
-@credit_router.get("/")
+@registry_router.get("/")
 async def list_users():
     # Get user logic here
     try:
 
-        users=lob_service.get_users()
+        users=store_service.get_users()
         return users
     
     except Exception as e:
         raise CustomHTTPException(message=e)
 
 
-@credit_router.post("/register")
+@registry_router.post("/register")
 async def create_user(
     username: str = Form(...), 
     phone: str = Form(...),
@@ -39,9 +39,9 @@ async def create_user(
 ):
     try:
 
-        id=lob_service.add_user(username,phone,email,password)
+        id=store_service.add_user(username,phone,email,password)
         nv=getverificationcode()
-        lob_service.save_user_verification_code(user_id=id,verification_code=nv)
+        store_service.save_user_verification_code(user_id=id,verification_code=nv)
         sendVerificationSME(nv)
         return {"message": "User created successfully : " +str(id)}
     
@@ -49,12 +49,12 @@ async def create_user(
         raise CustomHTTPException(message=e)
 
 
-@credit_router.get("/{id}/profile")
+@registry_router.get("/{id}/profile")
 async def get_user(id: str):
     # Get user logic here
     try:
 
-        user=lob_service.get_user_by_id(uid=id)
+        user=store_service.get_user_by_id(uid=id)
         return user
     
     except Exception as e:
@@ -63,46 +63,46 @@ async def get_user(id: str):
 
 
 #TODO: get rid of id from url instead use jwt token
-@credit_router.put("/password")
+@registry_router.put("/password")
 async def change_password(id:str=  Form(...), new_password:str = Form(...)):
     try:
-        users=lob_service.update_user_password(user_id=id,password=new_password)
+        users=store_service.update_user_password(user_id=id,password=new_password)
         return {"message": f"Password updated successfully for user ID {id}"}
     except Exception as e:
         raise CustomHTTPException(message=e)
 
 
-@credit_router.put("/lock")
+@registry_router.put("/lock")
 async def change_password(id:str=  Form(...), status=Form(...)):
     try:
-        users=lob_service.lock_user(user_id=id,status=status)
+        users=store_service.lock_user(user_id=id,status=status)
         return {"message": f"User {id}'s lock status is set to - {status} successfully"}
     except Exception as e:
         raise CustomHTTPException(message=e)
 
-@credit_router.put("/username")
+@registry_router.put("/username")
 async def change_password(id:str=  Form(...), username=Form(...)):
     try:
-        users=lob_service.update_username(user_id=id,username=username)
+        users=store_service.update_username(user_id=id,username=username)
         return {"message": f"User {id}'s username is set to - {username} successfully"}
     except Exception as e:
         raise CustomHTTPException(message=e)
     
 
-@credit_router.put("/user_type")
+@registry_router.put("/user_type")
 async def change_password(id:str=  Form(...), type=Form(...)):
     try:
-        users=lob_service.update_user_type(user_id=id,value=type)
+        users=store_service.update_user_type(user_id=id,value=type)
         return {"message": f"User {id}'s user_type is set to - {type} successfully"}
     except Exception as e:
         raise CustomHTTPException(message=e)
     
     
 
-@credit_router.delete("/{id}")
+@registry_router.delete("/{id}")
 async def delete_user(id: str):
     try:
-        users=lob_service.hard_delete_user(user_id=id)
+        users=store_service.hard_delete_user(user_id=id)
         print("after return")
         return {"message": f"User {id} deleted successfully"}
     except Exception as e:
@@ -110,13 +110,13 @@ async def delete_user(id: str):
     
 
 #TODO: get rid of id from url instead use jwt token
-@credit_router.post("/verify")
+@registry_router.post("/verify")
 async def verify_user(id:str=  Form(...), verification_code:str = Form(...)):
     # Verify user logic here
     try: 
-        saved_verification_code = lob_service.get_user_verification_code(user_id=id)
+        saved_verification_code = store_service.get_user_verification_code(user_id=id)
         if saved_verification_code == verification_code:
-            lob_service.is_verified(user_id=id)
+            store_service.is_verified(user_id=id)
             return {"message": "User verified successfully"}
         else:
             raise "verification failed" 
@@ -125,12 +125,12 @@ async def verify_user(id:str=  Form(...), verification_code:str = Form(...)):
     
 
 #TODO: get rid of id from url instead use jwt token
-@credit_router.get("/resend-verification/{id}")
+@registry_router.get("/resend-verification/{id}")
 async def resend_verification(id: str):
     # Verify user logic here
     try: 
         nv=getverificationcode()
-        lob_service.save_user_verification_code(user_id=id,verification_code=nv)
+        store_service.save_user_verification_code(user_id=id,verification_code=nv)
         sendVerificationSME(nv)
         return {"message": "Verification email sent successfully"}
     except Exception as e:
@@ -140,13 +140,13 @@ async def resend_verification(id: str):
 '''
 # Additional Endpoints
 
-@credit_router.post("/users/login")
+@registry_router.post("/users/login")
 async def user_login(credentials: UserCredentials):
     # User login logic here
     return {"access_token": "jwt_token"}
 
 
-@credit_router.post("/refresh", response_model=Token)
+@registry_router.post("/refresh", response_model=Token)
 async def refresh_token(token_refresh: TokenRefresh, authorize: AuthJWT = Depends()):
     authorize.jwt_refresh_token_required()
 
@@ -156,7 +156,7 @@ async def refresh_token(token_refresh: TokenRefresh, authorize: AuthJWT = Depend
 
     return {"access_token": new_access_token, "refresh_token": token_refresh.refresh_token}
 
-@credit_router.post("/users/logout")
+@registry_router.post("/users/logout")
 async def user_logout():
     # User logout logic here
     return {"message": "User logged out successfully"}

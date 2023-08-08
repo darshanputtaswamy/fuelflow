@@ -1,11 +1,11 @@
 from domain.core.app_users import AppUsers,AppUserVerification
-from domain.fuelflow.lob import LOB,LOBActivities,LOBRoles,LOBRota,LOBUserPrivilege,POS
+from domain.fuelflow.store import Store,StoreActivities,StoreRoles,StoreRota,StoreUserPrivilege,POS
 from domain.core.subscription import Plans, Subscription,SubscriptionPaymentOrder
 from infrastructure.repository.core.app_users_sa_repo import AppUsersSQLAlchemyRepository
-from infrastructure.repository.fuelflow.lob_sa_repo import LOBSQLAlchemyRepository,LOBActivitiesSQLAlchemyRepository,LOBRolesSQLAlchemyRepository,LOBUserPrivilegeSQLAlchemyRepository,LOBRotaSQLAlchemyRepository,POSSQLAlchemyRepository
+from infrastructure.repository.fuelflow.store_sa_repo import StoreSQLAlchemyRepository,StoreActivitiesSQLAlchemyRepository,StoreRolesSQLAlchemyRepository,StoreUserPrivilegeSQLAlchemyRepository,StoreRotaSQLAlchemyRepository,POSSQLAlchemyRepository
 from infrastructure.repository.core.subscription_sa_repo import PlansSQLAlchemyRepository,SubscriptionSQLAlchemyRepository, SubscriptionPaymentOrderSQLAlchemyRepository
 
-from infrastructure.persistence.orm.models import AppUsersORM,PlansORM,SubscriptionORM,SubscriptionPaymentOrderORM,AppUserVerificationORM,LOBORM,LOBUserPrivilegeORM,POSORM,LOBActivitiesORM,LOBRolesORM,LOBRotaORM,FuelRegistryORM,LOBCreditVehiclesORM,LOBCreditOrdersORM,LOBCreditOrderLineItemsORM,FuelDipReaderORM,FuelUnloadingBookORM
+from infrastructure.persistence.orm.models import AppUsersORM,PlansORM,SubscriptionORM,SubscriptionPaymentOrderORM,AppUserVerificationORM,StoreORM,StoreUserPrivilegeORM,POSORM,StoreActivitiesORM,StoreRolesORM,StoreRotaORM,FuelRegistryORM,StoreCreditVehiclesORM,StoreCreditOrdersORM,StoreCreditOrderLineItemsORM,FuelDipReaderORM,FuelUnloadingBookORM
 from datetime import datetime
 import uuid
 from sqlalchemy import  select
@@ -25,9 +25,9 @@ def test_infra_subscription_curd(session):
     repo.add(AppuserObj)
     session.commit()
 
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
-    lobrepo = LOBSQLAlchemyRepository(session)
-    lobrepo.add(lobObj)
+    storeObj=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
+    storerepo = StoreSQLAlchemyRepository(session)
+    storerepo.add(storeObj)
     session.commit()
 
 
@@ -36,7 +36,7 @@ def test_infra_subscription_curd(session):
     planrepo.add(planObj)
     session.commit()
 
-    subObj=Subscription(uid=str(arr[3]),lob_uid=str(arr[1]),initiated_user_uid=str(arr[0]),plan_id=str(arr[2]),paid_amount=1,receipt_id="1212",status="Pending",payment_id="testing",order_id="testing",signature="testing",created_date=created)
+    subObj=Subscription(uid=str(arr[3]),store_uid=str(arr[1]),initiated_user_uid=str(arr[0]),plan_id=str(arr[2]),paid_amount=1,receipt_id="1212",status="Pending",payment_id="testing",order_id="testing",signature="testing",created_date=created)
 
     subRepo = SubscriptionSQLAlchemyRepository(session)
     subRepo.add(subObj)
@@ -53,7 +53,7 @@ def test_infra_subscription_curd(session):
     assert expected == actual
 
 
-    res = subRepo.getByReference(lob_uid=str(arr[1]))
+    res = subRepo.getByReference(store_uid=str(arr[1]))
     assert res == expected
 
     res = subRepo.list()
@@ -110,7 +110,7 @@ def test_infra_plan_curd(session):
     assert res == planObj
 
 
-def test_infra_lobpos_curd(session):
+def test_infra_storepos_curd(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
 
@@ -119,49 +119,49 @@ def test_infra_lobpos_curd(session):
     repo.add(AppuserObj)
     session.commit()
 
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
-    lobrepo = LOBSQLAlchemyRepository(session)
-    lobrepo.add(lobObj)
+    storeObj=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
+    storerepo = StoreSQLAlchemyRepository(session)
+    storerepo.add(storeObj)
     session.commit()
 
 
-    lobpos=POS(uid=str(arr[2]), lob_uid=str(arr[1]),pos_contact_uid=str(arr[0]), pos_name='=str(arr[0])',pos_type='Testing' ,created_date=created)
-    lobPosRepo = POSSQLAlchemyRepository(session)
-    lobPosRepo.add(lobpos)
+    storepos=POS(uid=str(arr[2]), store_uid=str(arr[1]),pos_contact_uid=str(arr[0]), pos_name='=str(arr[0])',pos_type='Testing' ,created_date=created)
+    storePosRepo = POSSQLAlchemyRepository(session)
+    storePosRepo.add(storepos)
     session.commit()
 
 
-    lobPOSs=session.query(POSORM).all()
+    storePOSs=session.query(POSORM).all()
     actual = []
-    for rca in lobPOSs:
+    for rca in storePOSs:
         actual.append(POS.from_orm(rca))
 
     expected = []
-    expected.append(lobpos)
+    expected.append(storepos)
     assert expected == actual
 
 
-    res = lobPosRepo.getByReference(lob_uid=str(arr[1]))
+    res = storePosRepo.getByReference(store_uid=str(arr[1]))
     assert res == expected
 
-    res = lobPosRepo.list()
+    res = storePosRepo.list()
     assert res == expected
 
-    res = lobPosRepo.get(id=str(arr[2]))
-    assert res == lobpos
+    res = storePosRepo.get(id=str(arr[2]))
+    assert res == storepos
 
-    lobpos.pos_type="Testing2"
+    storepos.pos_type="Testing2"
 
-    res = lobPosRepo.update(lobpos)
+    res = storePosRepo.update(storepos)
     session.commit()
 
-    res = lobPosRepo.get(id=str(arr[2]))
-    assert res == lobpos
+    res = storePosRepo.get(id=str(arr[2]))
+    assert res == storepos
 
 
 
 
-def test_infra_lobrota_curd(session):
+def test_infra_storerota_curd(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
 
@@ -170,130 +170,130 @@ def test_infra_lobrota_curd(session):
     repo.add(AppuserObj)
     session.commit()
 
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
-    lobrepo = LOBSQLAlchemyRepository(session)
-    lobrepo.add(lobObj)
+    storeObj=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
+    storerepo = StoreSQLAlchemyRepository(session)
+    storerepo.add(storeObj)
     session.commit()
 
-    lobRole=LOBRoles(uid=str(arr[2]), lob_uid=str(arr[1]), roles='ADMIN')
-    lobRolerepo = LOBRolesSQLAlchemyRepository(session)
-    lobRolerepo.add(lobRole)
+    storeRole=StoreRoles(uid=str(arr[2]), store_uid=str(arr[1]), roles='ADMIN')
+    storeRolerepo = StoreRolesSQLAlchemyRepository(session)
+    storeRolerepo.add(storeRole)
     session.commit()
 
-    lobActivity=LOBActivities(uid=str(arr[3]), lob_uid=str(arr[1]), activity_type='ADMIN')
-    lobActivityrepo = LOBActivitiesSQLAlchemyRepository(session)
-    lobActivityrepo.add(lobActivity)
-    session.commit()
-
-
-    lobRota=LOBRota(uid=str(arr[3]), lob_uid=str(arr[1]), user_uid=str(arr[0]),from_date=created ,till_date=created,role_uid=str(arr[2]),activity_uid=str(arr[3]),approval_status='Approved')
-    lobRotaRepo = LOBRotaSQLAlchemyRepository(session)
-    lobRotaRepo.add(lobRota)
+    storeActivity=StoreActivities(uid=str(arr[3]), store_uid=str(arr[1]), activity_type='ADMIN')
+    storeActivityrepo = StoreActivitiesSQLAlchemyRepository(session)
+    storeActivityrepo.add(storeActivity)
     session.commit()
 
 
-    lobRotas=session.query(LOBRotaORM).all()
+    storeRota=StoreRota(uid=str(arr[3]), store_uid=str(arr[1]), user_uid=str(arr[0]),from_date=created ,till_date=created,role_uid=str(arr[2]),activity_uid=str(arr[3]),approval_status='Approved')
+    storeRotaRepo = StoreRotaSQLAlchemyRepository(session)
+    storeRotaRepo.add(storeRota)
+    session.commit()
+
+
+    storeRotas=session.query(StoreRotaORM).all()
     actual = []
-    for rca in lobRotas:
-        actual.append(LOBRota.from_orm(rca))
+    for rca in storeRotas:
+        actual.append(StoreRota.from_orm(rca))
 
     expected = []
-    expected.append(lobRota)
+    expected.append(storeRota)
     assert expected == actual
 
 
-    res = lobRotaRepo.getByReference(lob_uid=str(arr[1]))
+    res = storeRotaRepo.getByReference(store_uid=str(arr[1]))
     assert res == expected
 
-    res = lobRotaRepo.list()
+    res = storeRotaRepo.list()
     assert res == expected
 
-    res = lobRotaRepo.get(id=str(arr[3]))
-    assert res == lobRota
+    res = storeRotaRepo.get(id=str(arr[3]))
+    assert res == storeRota
 
-    lobRota.approval_status="DENIED"
+    storeRota.approval_status="DENIED"
 
-    res = lobRotaRepo.update(lobRota)
+    res = storeRotaRepo.update(storeRota)
     session.commit()
 
-    res = lobRotaRepo.get(id=str(arr[3]))
-    assert res == lobRota
+    res = storeRotaRepo.get(id=str(arr[3]))
+    assert res == storeRota
 
 
 
 
-def test_infra_repo_lobRoles_crud(session):
+def test_infra_repo_storeRoles_crud(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
-    lobrepo = LOBSQLAlchemyRepository(session)
-    lobrepo.add(lobObj)
+    storeObj=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
+    storerepo = StoreSQLAlchemyRepository(session)
+    storerepo.add(storeObj)
     session.commit()
 
-    lobRole=LOBRoles(uid=str(arr[2]), lob_uid=str(arr[1]), roles='ADMIN')
-    lobRolerepo = LOBRolesSQLAlchemyRepository(session)
-    lobRolerepo.add(lobRole)
+    storeRole=StoreRoles(uid=str(arr[2]), store_uid=str(arr[1]), roles='ADMIN')
+    storeRolerepo = StoreRolesSQLAlchemyRepository(session)
+    storeRolerepo.add(storeRole)
     session.commit()
 
 
-    lobActivities=session.query(LOBRolesORM).all()
+    storeActivities=session.query(StoreRolesORM).all()
     actual = []
-    for rca in lobActivities:
-        actual.append(LOBRoles.from_orm(rca))
+    for rca in storeActivities:
+        actual.append(StoreRoles.from_orm(rca))
 
     expected = []
-    expected.append(lobRole)
+    expected.append(storeRole)
     assert expected == actual
 
 
-    res = lobRolerepo.getByReference(lob_uid=str(arr[1]))
+    res = storeRolerepo.getByReference(store_uid=str(arr[1]))
     assert res == expected
 
-    res = lobRolerepo.list()
+    res = storeRolerepo.list()
     assert res == expected
 
-    res = lobRolerepo.get(id=str(arr[2]))
-    assert res == lobRole
+    res = storeRolerepo.get(id=str(arr[2]))
+    assert res == storeRole
 
 
 
-def test_infra_repo_lobActivities_crud(session):
+def test_infra_repo_storeActivities_crud(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
-    lobrepo = LOBSQLAlchemyRepository(session)
-    lobrepo.add(lobObj)
+    storeObj=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",   is_deleted="N",created_date=created)
+    storerepo = StoreSQLAlchemyRepository(session)
+    storerepo.add(storeObj)
     session.commit()
 
-    lobActivity=LOBActivities(uid=str(arr[2]), lob_uid=str(arr[1]), activity_type='ADMIN')
-    lobActivityrepo = LOBActivitiesSQLAlchemyRepository(session)
-    lobActivityrepo.add(lobActivity)
+    storeActivity=StoreActivities(uid=str(arr[2]), store_uid=str(arr[1]), activity_type='ADMIN')
+    storeActivityrepo = StoreActivitiesSQLAlchemyRepository(session)
+    storeActivityrepo.add(storeActivity)
     session.commit()
 
 
-    lobActivities=session.query(LOBActivitiesORM).all()
+    storeActivities=session.query(StoreActivitiesORM).all()
     actual = []
-    for rca in lobActivities:
-        actual.append(LOBActivities.from_orm(rca))
+    for rca in storeActivities:
+        actual.append(StoreActivities.from_orm(rca))
 
     expected = []
-    expected.append(lobActivity)
+    expected.append(storeActivity)
     assert expected == actual
 
 
-    res = lobActivityrepo.getByReference(lob_uid=str(arr[1]))
+    res = storeActivityrepo.getByReference(store_uid=str(arr[1]))
     assert res == expected
 
-    res = lobActivityrepo.list()
+    res = storeActivityrepo.list()
     assert res == expected
 
-    res = lobActivityrepo.get(id=str(arr[2]))
-    assert res == lobActivity
+    res = storeActivityrepo.get(id=str(arr[2]))
+    assert res == storeActivity
 
 
 
 
-def test_infra_repo_lobUserPrivilege_crud(session):
+def test_infra_repo_storeUserPrivilege_crud(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
     AppuserObj= AppUsers(uid=str(arr[0]),
@@ -311,83 +311,83 @@ def test_infra_repo_lobUserPrivilege_crud(session):
     repo.add(AppuserObj)
     session.commit()
 
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",  is_deleted="N",created_date=created)
-    lobrepo = LOBSQLAlchemyRepository(session)
-    lobrepo.add(lobObj)
+    storeObj=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",  is_deleted="N",created_date=created)
+    storerepo = StoreSQLAlchemyRepository(session)
+    storerepo.add(storeObj)
     session.commit()
 
-    lobPriv=LOBUserPrivilege(uid=str(arr[2]), user_uid=str(arr[0]), lob_uid=str(arr[1]),role='ADMIN',created_date=created)
-    lobPrivrepo = LOBUserPrivilegeSQLAlchemyRepository(session)
-    lobPrivrepo.add(lobPriv)
+    storePriv=StoreUserPrivilege(uid=str(arr[2]), user_uid=str(arr[0]), store_uid=str(arr[1]),role='ADMIN',created_date=created)
+    storePrivrepo = StoreUserPrivilegeSQLAlchemyRepository(session)
+    storePrivrepo.add(storePriv)
     session.commit()
 
 
-    lobPrivs=session.query(LOBUserPrivilegeORM).all()
+    storePrivs=session.query(StoreUserPrivilegeORM).all()
     actual = []
-    for rca in lobPrivs:
-        actual.append(LOBUserPrivilege.from_orm(rca))
+    for rca in storePrivs:
+        actual.append(StoreUserPrivilege.from_orm(rca))
 
     expected = []
-    expected.append(lobPriv)
+    expected.append(storePriv)
     assert expected == actual
 
 
-    res = lobPrivrepo.getByReference(lob_uid=str(arr[1]))
+    res = storePrivrepo.getByReference(store_uid=str(arr[1]))
     assert res == expected
 
-    res = lobPrivrepo.list()
+    res = storePrivrepo.list()
     assert res == expected
 
-    res = lobPrivrepo.get(id=str(arr[2]))
-    assert res == lobPriv
+    res = storePrivrepo.get(id=str(arr[2]))
+    assert res == storePriv
 
-    lobPriv.role="EMPLOYEE"
+    storePriv.role="EMPLOYEE"
 
-    res = lobPrivrepo.update(lobPriv)
+    res = storePrivrepo.update(storePriv)
     session.commit()
 
-    res = lobPrivrepo.get(id=str(arr[2]))
-    assert res == lobPriv
+    res = storePrivrepo.get(id=str(arr[2]))
+    assert res == storePriv
 
 
 
-def test_infra_repo_lob_crud(session):
+def test_infra_repo_store_crud(session):
     arr=  [uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4(),uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
     created=datetime.datetime.now()
 
 
-    lobObj=LOB(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",  is_deleted="N",created_date=created)
-    lobrepo = LOBSQLAlchemyRepository(session)
-    lobrepo.add(lobObj)
+    storeObj=Store(uid=str(arr[1]), buisness_name="testing",type="testing",address="testing",postal_code="testing", gst_number="testing ",  is_deleted="N",created_date=created)
+    storerepo = StoreSQLAlchemyRepository(session)
+    storerepo.add(storeObj)
     session.commit()
 
 
-    users=session.query(LOBORM).all()
+    users=session.query(StoreORM).all()
     actual = []
     for rca in users:
-        actual.append(LOB.from_orm(rca))
+        actual.append(Store.from_orm(rca))
 
     expected = []
-    expected.append(lobObj)
+    expected.append(storeObj)
     assert expected == actual
 
 
-    res = lobrepo.getByReference(buisness_name="testing")
+    res = storerepo.getByReference(buisness_name="testing")
     assert res == expected
 
-    res = lobrepo.list()
+    res = storerepo.list()
     assert res == expected
 
-    res = lobrepo.get(id=str(arr[1]))
-    assert res == lobObj
+    res = storerepo.get(id=str(arr[1]))
+    assert res == storeObj
 
-    lobObj.buisness_name="another_name"
+    storeObj.buisness_name="another_name"
 
-    res = lobrepo.update(lobObj)
+    res = storerepo.update(storeObj)
     session.commit()
 
-    res = lobrepo.get(id=str(arr[1]))
-    assert res == lobObj
+    res = storerepo.get(id=str(arr[1]))
+    assert res == storeObj
 
 
 

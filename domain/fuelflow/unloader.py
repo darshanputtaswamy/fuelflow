@@ -6,14 +6,14 @@ import json
 from enum import Enum
 from datetime import datetime
 from domain.core.app_users import AppUsers
-from domain.fuelflow.lob import LOB
+from domain.fuelflow.store import Store
 
 
 
 
 class FuelDipReader(BaseModel):
     uid: uuid.UUID
-    lob_uid:uuid.UUID
+    store_uid:uuid.UUID
     fuel_tank: str
     dip_number: float
     liters:float
@@ -28,7 +28,7 @@ class FuelDipReader(BaseModel):
     
 class FuelUnloadingBook(BaseModel):
     uid: uuid.UUID
-    lob_uid:uuid.UUID
+    store_uid:uuid.UUID
     unload_date: datetime
     fuel_tank:str
     vehicle_number:str
