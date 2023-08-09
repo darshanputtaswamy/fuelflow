@@ -15,22 +15,27 @@ store_service=FuelFlowService(sqlaclk_uow)
 
 
 '''
+GET /store/previlege
+GET /store/previlege/{store_uid}
+POST /store/previlege/{uid}
+DELETE /store/previlege/{uid}
+
 GET /store/activities
 GET /store/activities/{store_uid}
 POST /store/activities/{store_uid}
 DELETE /store/activities
 
 
-GET /store/previlege
-GET /store/previlege/{store_uid}
-POST /store/previlege/{uid}
-DELETE /store/previlege/{uid}
-
-
 GET /store/roles
 GET /store/roles/{store_uid}
 POST /store/roles/{uid}
 DELETE /store/roles/{uid}
+
+GET /store/pos
+GET /store/pos/{store_uid}
+POST /store/pos/{store_uid}
+PUT /store/pos/{store_uid}
+DELETE /store/pos/{uid}
 
 
 GET /store/rota
@@ -40,11 +45,6 @@ PUT /store/rota/{uid}
 DELETE /store/rota/{uid}
 
 
-GET /store/pos
-GET /store/pos/{store_uid}
-POST /store/pos/{store_uid}
-PUT /store/pos/{store_uid}
-DELETE /store/pos/{uid}
 
 '''
 
@@ -59,7 +59,7 @@ async def list_all_store():
     except Exception as e:
         raise CustomHTTPException(message=e)
 
-
+'''
 
 @store_router.get("/by-user/{user_id}")
 async def  list_stores_associated_with_user_id(user_id:str):
@@ -69,7 +69,7 @@ async def  list_stores_associated_with_user_id(user_id:str):
         return stores
     except Exception as e:
         raise CustomHTTPException(message=e)
-
+'''
 
 @store_router.post("/")
 async def create_new_store(
@@ -198,5 +198,175 @@ async def delete_user_from_store(uid:str):
     try:
         store_service.delete_privilege_record(uid)            
         return {"message": f"User role information successfully modified"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+
+@store_router.get("/activities/{store_uid}")
+async def get_activity_from_store(store_uid:str):
+    try:
+        return store_service.get_activity_types_by_store(store_uid=store_uid)            
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@store_router.delete("/activities/{store_uid}")
+async def delete_activity_type_from_store(store_uid:str,
+                                          uid:str = Form(...),
+                                          ):
+    try:
+        store_service.delete_activity_type(uid,store_uid)            
+        return {"message": f"Activity Type  successfully deleted"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@store_router.post("/activities")
+async def create_activity_type_for_store(
+                          store_uid:str = Form(...), 
+                          activity_type:str = Form(...)):
+    try:
+        store_service.create_activity_type(store_uid,activity_type)            
+        return {"message": f"Activity Type  successfully Added"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+
+@store_router.get("/roles/{store_uid}")
+async def get_role_types_from_store(store_uid:str):
+    try:
+        return store_service.get_role_types_by_store(store_uid=store_uid)            
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@store_router.delete("/roles/{store_uid}")
+async def delete_role_type_from_store(store_uid:str,
+                                          uid:str = Form(...),
+                                          ):
+    try:
+        store_service.delete_role_type(uid,store_uid)            
+        return {"message": f"Role Type  successfully deleted"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@store_router.post("/roles")
+async def create_role_type_for_store(
+                          store_uid:str = Form(...) , 
+                          role_type:str = Form(...)):
+    try:
+        store_service.create_role_type(store_uid,role_type)            
+        return {"message": f"Role Type  successfully Added"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+
+
+@store_router.get("/pos-by-store/{store_uid}")
+async def get_pos_by_store(store_uid:str):
+    try:
+        return store_service.get_pos_by_store(store_uid=store_uid)            
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@store_router.get("/pos-by-user/{user_uid}")
+async def get_pos_by_user(user_uid:str):
+    try:
+        return store_service.get_pos_by_user(user_uid=user_uid)            
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+
+@store_router.delete("/pos/{uid}")
+async def delete_pos(uid:str):
+    try:
+        store_service.delete_pos(uid)            
+        return {"message": f"POS  successfully deleted"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@store_router.post("/pos")
+async def create_pos_for_store(store_uid:str = Form(...),pos_name:str = Form(...), pos_type:str = Form(...),pos_contact_uid:str = Form(...)):
+    try:
+        store_service.create_store_pos(store_uid,pos_name,pos_type,pos_contact_uid)            
+        return {"message": f"POS successfully created"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@store_router.put("/pos/{uid}")
+async def update_pos_infomation(uid:str, store_uid:str = Form(...), pos_name:str = Form(...), pos_type:str = Form(...),pos_contact_uid:str = Form(...)):
+    try:
+        store_service.update_pos(uid,store_uid,pos_name,pos_type,pos_contact_uid)            
+        return {"message": f"POS data updated successful"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+###########
+
+
+@store_router.get("/rota-by-store/{store_uid}")
+async def get_rota_record_by_store(store_uid:str):
+    try:
+        return store_service.get_rota_record_by_store(store_uid=store_uid)            
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@store_router.get("/rota-by-user/{user_uid}")
+async def get_rota_by_user(user_uid:str):
+    try:
+        return store_service.get_rota_record_by_user(user_uid=user_uid)            
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+
+@store_router.delete("/rota/{uid}")
+async def delete_rota(uid:str):
+    try:
+        store_service.delete_rota_record(uid)            
+        return {"message": f"Rota successfully deleted"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@store_router.post("/rota")
+async def create_rota(
+    user_uid:str = Form(...), 
+    store_uid:str = Form(...), 
+    from_date:str = Form(...), 
+    till_date:str = Form(...), 
+    role_uid:str = Form(...), 
+    activity_uid:str = Form(...), 
+    approval_status:str = Form(...), 
+    ):
+    try:
+        store_service.create_rota_record(user_uid,store_uid,from_date,till_date,role_uid,activity_uid,approval_status)            
+        return {"message": f"Rota successfully created"}
+    except Exception as e:
+        raise CustomHTTPException(message=e)
+    
+
+@store_router.put("/rota/{uid}")
+async def update_rota_infomation(uid:str,  
+    user_uid:str = Form(...), 
+    store_uid:str = Form(...), 
+    from_date:str = Form(...), 
+    till_date:str = Form(...), 
+    role_uid:str = Form(...), 
+    activity_uid:str = Form(...), 
+    approval_status:str = Form(...), ):
+    try:
+        store_service.update_rota_record(uid, user_uid,store_uid,from_date,till_date,role_uid,activity_uid,approval_status)            
+        return {"message": f"Rota data updated successful"}
     except Exception as e:
         raise CustomHTTPException(message=e)

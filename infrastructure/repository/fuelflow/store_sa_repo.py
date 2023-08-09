@@ -60,21 +60,21 @@ class StoreActivitiesSQLAlchemyRepository(AbstractRepository):
     def __init__(self, session):
         self.session = session
 
-    def add(self, store):
-        store_in_orm=StoreActivitiesORM(**store.dict())
-        self.session.add(store_in_orm)
+    def add(self, activtiy):
+        activtiy_in_orm=StoreActivitiesORM(**activtiy.dict())
+        self.session.add(activtiy_in_orm)
     
     def get(self, id):
-         store_in_orm=self.session.get(StoreActivitiesORM,str(id))
-         if store_in_orm is not None:
-            return StoreActivities.from_orm(store_in_orm)
+         activtiy_in_orm=self.session.get(StoreActivitiesORM,str(id))
+         if activtiy_in_orm is not None:
+            return StoreActivities.from_orm(activtiy_in_orm)
          else:
              return None
 
     def list(self):
-        store_in_orm=self.session.query(StoreActivitiesORM).all()
+        activtiy_in_orm=self.session.query(StoreActivitiesORM).all()
         res=[]
-        for RCA in store_in_orm:
+        for RCA in activtiy_in_orm:
             res.append(StoreActivities.from_orm(RCA))
         return res
 
@@ -87,8 +87,8 @@ class StoreActivitiesSQLAlchemyRepository(AbstractRepository):
         return res
 
     def delete(self,id):
-        store_in_orm=self.session.get(StoreActivitiesORM,str(id))
-        self.session.delete(store_in_orm)
+        activtiy_in_orm=self.session.get(StoreActivitiesORM,str(id))
+        self.session.delete(activtiy_in_orm)
 
     def update(self):
          raise NotImplementedError

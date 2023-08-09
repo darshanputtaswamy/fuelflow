@@ -3,8 +3,10 @@ from domain.fuelflow.store import Store,StoreActivities,StoreRoles,StoreUserPriv
 import uuid
 import datetime
 from .custom.privileges_service import PrivilegeService
+from .custom.activity_service import ActivitiesService
+from .custom.roles_service import RolesService
 
-class FuelFlowService(PrivilegeService):
+class FuelFlowService(PrivilegeService,ActivitiesService,RolesService):
     def __init__(self,uow):
         self.uow=uow
         super().__init__(uow)
